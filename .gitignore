@@ -1,0 +1,29 @@
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# Node / Expo generated files
+**/node_modules/
+**/.expo/
+**/.expo-*/
+**/dist/
+**/web-build/
+npm-debug.log*
+
+# Java / Maven generated files
+**/target/
+*.class
+
+# IDE and OS files
+.vscode/
+.idea/
+*.iml
+.DS_Store
+
+# Local certificates and signing material
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision

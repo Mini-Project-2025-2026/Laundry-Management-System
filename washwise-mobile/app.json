@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "WashWise",
+    "slug": "washwise",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "backgroundColor": "#EDEEE9",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#12308C"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.washwise.mobile"
+    },
+    "android": {
+      "package": "com.washwise.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#12308C"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "WashWise uses your location to show nearby laundries and estimate distance."
+        }
+      ],
+      "expo-font",
+      "expo-splash-screen",
+      "expo-status-bar"
+    ]
+  }
+}

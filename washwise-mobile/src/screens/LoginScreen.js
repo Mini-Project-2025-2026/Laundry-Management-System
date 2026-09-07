@@ -1,0 +1,184 @@
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
+import { useApi } from '../api/client';
+import AuthBackground from '../components/AuthBackground';
+import IconPillInput from '../components/IconPillInput';
+import GradientButton from '../components/GradientButton';
+import CheckRow from '../components/CheckRow';
+import SlideFadeIn from '../components/SlideFadeIn';
+import ApiSettingsBanner from '../components/ApiSettingsBanner';
+import { colors, fonts } from '../theme';
+
+export default function LoginScreen({ onGoToSignup }) {
+  const { api } = useApi();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleLogin = async () => {
+    setError('');
+    if (!email || !password) {
+      setError('Enter your email and password.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await api.login({ email: email.trim(), password });
+      // On success, ApiProvider stores the token/user — App.js reacts to
+      // that and switches away from the auth screens automatically.
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <View style={styles.root}>
+      <AuthBackground />
+      <SlideFadeIn direction="left">
+        <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Log in to book or manage a laundry service</Text>
+
+            <View style={styles.form}>
+              <IconPillInput
+                icon="mail-outline"
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+              />
+              <IconPillInput
+                icon="lock-closed-outline"
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+
+              <View style={styles.rowBetween}>
+                <CheckRow checked={rememberMe} onToggle={() => setRememberMe((v) => !v)} label="Remember me" />
+              </View>
+
+              {error ? <Text style={styles.error}>{error}</Text> : null}
+
+              <GradientButton
+                label={submitting ? 'Logging in…' : 'Login'}
+                onPress={handleLogin}
+                disabled={submitting}
+                style={{ marginTop: 26 }}
+              />
+
+              <Pressable style={styles.switchLink} onPress={onGoToSignup}>
+                <Text style={styles.switchLinkText}>
+                  Don't have an account? <Text style={styles.switchLinkAccent}>Sign up</Text>
+                </Text>
+              </Pressable>
+
+              <ApiSettingsBanner />
+
+              <View style={styles.demoBox}>
+                <Text style={styles.demoTitle}>Demo accounts (seeded on the backend)</Text>
+                <Text style={styles.demoLine}>Customer: customer@demo.com / password123</Text>
+                <Text style={styles.demoLine}>Laundry owner: owner@demo.com / password123</Text>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SlideFadeIn>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.paper },
+  flex: { flex: 1 },
+  container: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: '34%',
+    paddingBottom: 40,
+  },
+  title: {
+    fontFamily: fonts.display,
+    fontSize: 26,
+    color: colors.ink,
+  },
+  subtitle: {
+    fontFamily: fonts.body,
+    fontSize: 13.5,
+    color: colors.inkSoft,
+    marginTop: 4,
+    marginBottom: 28,
+  },
+  form: {
+    marginTop: 4,
+  },
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  forgot: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 13,
+    color: colors.gradientMid,
+  },
+  error: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.alert,
+    backgroundColor: colors.alertSoft,
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 16,
+  },
+  switchLink: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  switchLinkText: {
+    fontFamily: fonts.body,
+    fontSize: 13.5,
+    color: colors.inkSoft,
+  },
+  switchLinkAccent: {
+    fontFamily: fonts.bodySemiBold,
+    color: colors.gradientMid,
+  },
+  demoBox: {
+    marginTop: 26,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderStyle: 'dashed',
+    borderRadius: 10,
+  },
+  demoTitle: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 11,
+    color: colors.inkSoft,
+    marginBottom: 4,
+  },
+  demoLine: {
+    fontFamily: fonts.monoRegular,
+    fontSize: 11.5,
+    color: colors.inkSoft,
+  },
+});
