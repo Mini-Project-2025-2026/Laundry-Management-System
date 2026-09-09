@@ -8,7 +8,27 @@ washwise-app/
   washwise-mobile/     Expo / React Native app — run this second
 ```
 
-## Quick start
+## 🚀 1-Click Desktop Executable Launcher
+
+For instant presentation on your laptop without typing any terminal commands:
+* Simply double-click **`Launch-WashWise.bat`** in the root folder!
+* It automatically starts the Spring Boot backend, boots the frontend, and opens WashWise in its own dedicated, standalone mobile app window.
+* To shut down all services cleanly after your presentation, double-click **`Stop-WashWise.bat`**.
+
+---
+
+## 📱 Standalone Android APK (.apk)
+
+To generate an installable Android APK file:
+```powershell
+cd washwise-mobile
+npx eas build -p android --profile preview
+```
+This builds a direct installable `.apk` file you can download and install on any Android phone.
+
+---
+
+## Manual Developer Quick Start
 
 **1. Backend** (needs Java 17+ and Maven):
 ```
