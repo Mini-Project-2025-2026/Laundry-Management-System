@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MapPin } from 'lucide-react-native';
 import { colors, fonts, radius } from '../theme';
 
 export default function MapPlaceholder({ address, latitude, longitude }) {
@@ -11,7 +11,7 @@ export default function MapPlaceholder({ address, latitude, longitude }) {
         ))}
       </View>
       <View style={styles.pinWrap}>
-        <Ionicons name="location" size={28} color={colors.gradientMid} />
+        <MapPin size={26} color={colors.gradientMid} strokeWidth={2.2} />
       </View>
       <Text style={styles.address} numberOfLines={2}>{address}</Text>
       {latitude != null && longitude != null && (
@@ -19,7 +19,7 @@ export default function MapPlaceholder({ address, latitude, longitude }) {
           {Number(latitude).toFixed(4)}, {Number(longitude).toFixed(4)}
         </Text>
       )}
-      <Text style={styles.note}>Map view coming soon</Text>
+      <Text style={styles.note}>Interactive map loading…</Text>
     </View>
   );
 }
@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 24,
     paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: colors.line,
   },
   grid: {
     ...StyleSheet.absoluteFillObject,
@@ -47,7 +49,18 @@ const styles = StyleSheet.create({
     borderColor: '#D3DBEE',
   },
   pinWrap: {
-    marginBottom: 6,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   address: {
     fontFamily: fonts.bodyMedium,

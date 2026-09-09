@@ -1,10 +1,29 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 const BASE_URL_KEY = 'laundryTicket:apiBaseUrl';
 const TOKEN_KEY = 'laundryTicket:authToken';
 const USER_KEY = 'laundryTicket:authUser';
-const DEFAULT_BASE_URL = 'http://localhost:8080/api';
+
+function resolveDefaultBaseUrl() {
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  const hostUri =
+    Constants.expoConfig?.hostUri ||
+    Constants.manifest2?.extra?.expoClient?.hostUri ||
+    Constants.manifest?.debuggerHost;
+  if (hostUri) {
+    const ip = hostUri.split(':')[0];
+    if (ip && ip !== 'localhost' && ip !== '127.0.0.1') {
+      return `http://${ip}:8080/api`;
+    }
+  }
+  return 'http://localhost:8080/api';
+}
+
+const DEFAULT_BASE_URL = resolveDefaultBaseUrl();
 
 const ApiContext = createContext(null);
 
@@ -24,6 +43,9 @@ async function request(baseUrl, path, options = {}, token) {
       }
     } catch {
       // no JSON body
+    }
+    if ((res.status === 401 || res.status === 403) && (!message || message.includes('failed') || message === 'Forbidden')) {
+      message = 'Your session has expired. Please log out in Settings and sign in again.';
     }
     throw new Error(message);
   }
@@ -46,7 +68,11 @@ export function ApiProvider({ children }) {
       AsyncStorage.getItem(USER_KEY),
     ])
       .then(([savedBaseUrl, savedToken, savedUser]) => {
-        if (savedBaseUrl) setBaseUrlState(savedBaseUrl);
+        if (savedBaseUrl && (!savedBaseUrl.includes('localhost') || resolveDefaultBaseUrl().includes('localhost'))) {
+          setBaseUrlState(savedBaseUrl);
+        } else {
+          setBaseUrlState(resolveDefaultBaseUrl());
+        }
         if (savedToken) setTokenState(savedToken);
         if (savedUser) setUserState(JSON.parse(savedUser));
       })
@@ -134,12 +160,13 @@ export function ApiProvider({ children }) {
         request(baseUrl, '/bookings', { method: 'POST', body: JSON.stringify(payload) }, token),
       getMyBookings: () => request(baseUrl, '/bookings/mine', {}, token),
       getBusinessBookings: (businessId) => request(baseUrl, `/bookings/business/${businessId}`, {}, token),
+      getOwnerBookings: () => request(baseUrl, '/bookings/owner/mine', {}, token),
       updateBookingStatus: (id, status) =>
         request(baseUrl, `/bookings/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }, token),
-      initializePaystackPayment: (bookingId, amount) =>
+      initializePaystackPayment: (bookingId, amount, mock = false) =>
         request(baseUrl, '/payments/paystack/initialize', {
           method: 'POST',
-          body: JSON.stringify({ bookingId, amount: Number(amount) }),
+          body: JSON.stringify({ bookingId, amount: Number(amount), mock }),
         }, token),
       verifyPaystackPayment: (reference) =>
         request(baseUrl, '/payments/paystack/verify', {

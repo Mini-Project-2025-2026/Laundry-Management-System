@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Modal, View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { AlertTriangle } from 'lucide-react-native';
 import { colors, fonts, radius } from '../theme';
 
 export default function DeleteAccountModal({ onClose, onConfirm }) {
@@ -28,7 +28,7 @@ export default function DeleteAccountModal({ onClose, onConfirm }) {
       <View style={styles.overlay}>
         <View style={styles.card}>
           <View style={styles.iconWrap}>
-            <Ionicons name="warning-outline" size={24} color={colors.alert} />
+            <AlertTriangle size={22} color={colors.alert} strokeWidth={2.2} />
           </View>
           <Text style={styles.title}>Delete your account?</Text>
           <Text style={styles.body}>
@@ -69,7 +69,7 @@ export default function DeleteAccountModal({ onClose, onConfirm }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(20,26,33,0.5)',
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -80,6 +80,8 @@ const styles = StyleSheet.create({
     padding: 22,
     width: '100%',
     maxWidth: 380,
+    borderWidth: 1,
+    borderColor: colors.line,
   },
   iconWrap: {
     width: 44,
@@ -114,7 +116,7 @@ const styles = StyleSheet.create({
   input: {
     fontFamily: fonts.body,
     fontSize: 15,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: colors.line,
     borderRadius: radius.sm,
     paddingVertical: 10,

@@ -35,6 +35,27 @@ public class Booking {
     @Column(nullable = false)
     private boolean deliveryRequested;
 
+    @Column(length = 32)
+    private String pickupType = "CUSTOMER_DROPOFF"; // CUSTOMER_DROPOFF or COURIER_PICKUP
+
+    @Column(length = 32)
+    private String returnType = "CUSTOMER_PICKUP"; // CUSTOMER_PICKUP or COURIER_DELIVERY
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal serviceFee = BigDecimal.ZERO;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal collectionFee = BigDecimal.ZERO;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal deliveryFee = BigDecimal.ZERO;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalAmount = BigDecimal.ZERO;
+
+    @Column(length = 500)
+    private String deliveryAddress;
+
     @Column(length = 1000)
     private String notes;
 

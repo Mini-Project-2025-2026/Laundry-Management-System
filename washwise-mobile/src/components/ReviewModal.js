@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { Modal, View, Text, TextInput, Pressable, StyleSheet, ScrollView } from 'react-native';
+import { Sparkles, CheckCircle2, Clock, Tag, Bike } from 'lucide-react-native';
 import RatingStars from './RatingStars';
 import GradientButton from './GradientButton';
 import { colors, fonts, radius } from '../theme';
 
 const FACTORS = [
-  { key: 'cleanliness', label: 'Cleanliness & hygiene' },
-  { key: 'accuracy', label: 'Accuracy of order' },
-  { key: 'qualityAndTimeliness', label: 'Quality & timeliness' },
-  { key: 'pricingFairness', label: 'Fair, transparent pricing' },
-  { key: 'pickupDeliveryConvenience', label: 'Pickup/delivery convenience' },
+  { key: 'cleanliness', label: 'Cleanliness & hygiene', icon: Sparkles },
+  { key: 'accuracy', label: 'Accuracy of order', icon: CheckCircle2 },
+  { key: 'qualityAndTimeliness', label: 'Quality & timeliness', icon: Clock },
+  { key: 'pricingFairness', label: 'Fair, transparent pricing', icon: Tag },
+  { key: 'pickupDeliveryConvenience', label: 'Pickup/delivery convenience', icon: Bike },
 ];
 
 export default function ReviewModal({ business, onClose, onSubmit }) {
@@ -41,23 +42,29 @@ export default function ReviewModal({ business, onClose, onSubmit }) {
           <View style={styles.handle} />
           <ScrollView showsVerticalScrollIndicator={false}>
             <Text style={styles.title}>Rate {business.businessName}</Text>
-            <Text style={styles.subtitle}>How was your experience?</Text>
+            <Text style={styles.subtitle}>How was your laundry experience?</Text>
 
             <View style={styles.overallRow}>
               <RatingStars value={overall} size={32} spacing={6} onChange={setOverall} />
             </View>
 
-            {FACTORS.map((f) => (
-              <View key={f.key} style={styles.factorRow}>
-                <Text style={styles.factorLabel}>{f.label}</Text>
-                <RatingStars
-                  value={factors[f.key] ?? 0}
-                  size={17}
-                  spacing={3}
-                  onChange={(v) => setFactor(f.key, v)}
-                />
-              </View>
-            ))}
+            {FACTORS.map((f) => {
+              const IconComp = f.icon;
+              return (
+                <View key={f.key} style={styles.factorRow}>
+                  <View style={styles.factorLeft}>
+                    <IconComp size={14} color={colors.gradientMid} strokeWidth={2} />
+                    <Text style={styles.factorLabel}>{f.label}</Text>
+                  </View>
+                  <RatingStars
+                    value={factors[f.key] ?? 0}
+                    size={17}
+                    spacing={3}
+                    onChange={(v) => setFactor(f.key, v)}
+                  />
+                </View>
+              );
+            })}
 
             <Text style={[styles.label, { marginTop: 14 }]}>Comment (optional)</Text>
             <TextInput
@@ -91,7 +98,7 @@ export default function ReviewModal({ business, onClose, onSubmit }) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(20,26,33,0.5)',
+    backgroundColor: 'rgba(15, 23, 42, 0.6)',
     justifyContent: 'flex-end',
   },
   sheet: {
@@ -123,22 +130,27 @@ const styles = StyleSheet.create({
   },
   overallRow: {
     alignItems: 'center',
-    paddingVertical: 18,
+    paddingVertical: 16,
   },
   factorRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
+  },
+  factorLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+    marginRight: 10,
   },
   factorLabel: {
     fontFamily: fonts.body,
     fontSize: 13,
     color: colors.ink,
-    flex: 1,
-    marginRight: 10,
   },
   label: {
     fontFamily: fonts.bodySemiBold,
@@ -151,7 +163,7 @@ const styles = StyleSheet.create({
   textArea: {
     fontFamily: fonts.body,
     fontSize: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: colors.line,
     borderRadius: radius.sm,
     padding: 12,

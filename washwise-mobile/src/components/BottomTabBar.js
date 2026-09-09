@@ -1,6 +1,14 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { colors, fonts } from '../theme';
+import { Compass, Receipt, Bell, Settings, Store } from 'lucide-react-native';
+import { colors, fonts, radius } from '../theme';
+
+const ICON_MAP = {
+  explore: Compass,
+  bookings: Receipt,
+  notifications: Bell,
+  settings: Settings,
+  business: Store,
+};
 
 export default function BottomTabBar({ tabs, active, onNavigate, badges = {} }) {
   return (
@@ -8,22 +16,31 @@ export default function BottomTabBar({ tabs, active, onNavigate, badges = {} }) 
       {tabs.map((tab) => {
         const isActive = tab.key === active;
         const badgeCount = badges[tab.key];
+        const IconComponent = ICON_MAP[tab.key] || Compass;
+
         return (
-          <Pressable key={tab.key} style={styles.tab} onPress={() => onNavigate(tab.key)}>
-            <View>
-              <Ionicons
-                name={isActive ? tab.iconActive : tab.icon}
-                size={21}
-                color={isActive ? colors.stamp : '#8EA3B2'}
+          <Pressable
+            key={tab.key}
+            style={styles.tab}
+            onPress={() => onNavigate(tab.key)}
+          >
+            <View style={[styles.iconContainer, isActive && styles.iconContainerActive]}>
+              <IconComponent
+                size={20}
+                color={isActive ? colors.brandDark : '#94A3B8'}
+                strokeWidth={isActive ? 2.4 : 1.8}
               />
               {!!badgeCount && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>{badgeCount > 9 ? '9+' : badgeCount}</Text>
+                  <Text style={styles.badgeText}>
+                    {badgeCount > 9 ? '9+' : badgeCount}
+                  </Text>
                 </View>
               )}
             </View>
-            <Text style={[styles.label, isActive && styles.labelActive]}>{tab.label}</Text>
-            {isActive && <View style={styles.indicator} />}
+            <Text style={[styles.label, isActive && styles.labelActive]}>
+              {tab.label}
+            </Text>
           </Pressable>
         );
       })}
@@ -34,48 +51,60 @@ export default function BottomTabBar({ tabs, active, onNavigate, badges = {} }) 
 const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
-    backgroundColor: colors.steelDark,
-    paddingTop: 10,
-    paddingBottom: 10,
+    backgroundColor: '#FFFFFF',
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderTopWidth: 1,
+    borderTopColor: colors.line,
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 3,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
-    gap: 4,
+    gap: 3,
+    paddingVertical: 2,
+  },
+  iconContainer: {
+    width: 44,
+    height: 30,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
+  },
+  iconContainerActive: {
+    backgroundColor: colors.brandSoft,
   },
   label: {
     fontFamily: fonts.bodyMedium,
     fontSize: 11,
-    color: '#CDD9E1',
+    color: '#94A3B8',
   },
   labelActive: {
-    color: '#fff',
+    color: colors.brandDark,
     fontFamily: fonts.bodySemiBold,
-  },
-  indicator: {
-    position: 'absolute',
-    top: -10,
-    width: 28,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: colors.stamp,
   },
   badge: {
     position: 'absolute',
-    top: -4,
-    right: -8,
-    minWidth: 15,
-    height: 15,
+    top: -2,
+    right: 3,
+    minWidth: 16,
+    height: 16,
     borderRadius: 8,
     backgroundColor: colors.alert,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 3,
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
   },
   badgeText: {
     fontFamily: fonts.bodySemiBold,
     fontSize: 9,
-    color: '#fff',
+    color: '#FFFFFF',
   },
 });

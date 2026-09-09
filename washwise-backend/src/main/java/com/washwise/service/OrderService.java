@@ -124,9 +124,15 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    private static final String CODE_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+
     private String generateOrderCode() {
         String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        int randomPart = ThreadLocalRandom.current().nextInt(1000, 9999);
-        return "ORD-" + datePart + "-" + randomPart;
+        StringBuilder sb = new StringBuilder(6);
+        for (int i = 0; i < 6; i++) {
+            int idx = ThreadLocalRandom.current().nextInt(CODE_ALPHABET.length());
+            sb.append(CODE_ALPHABET.charAt(idx));
+        }
+        return "ORD-" + datePart + "-" + sb;
     }
 }

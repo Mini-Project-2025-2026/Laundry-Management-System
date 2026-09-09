@@ -1,31 +1,31 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MapPin, ChevronDown, Bell, ShoppingBag } from 'lucide-react-native';
 import { colors, fonts } from '../theme';
 
 export default function HomeHeader({ userName, locationLabel, unreadCount, onPressBell, onPressBag }) {
   return (
     <View style={styles.row}>
       <View style={styles.avatar}>
-        <Text style={styles.avatarInitial}>{userName?.[0]?.toUpperCase() ?? '?'}</Text>
+        <Text style={styles.avatarInitial}>{userName?.[0]?.toUpperCase() ?? 'W'}</Text>
       </View>
 
-      <View style={{ flex: 1, marginLeft: 10 }}>
+      <View style={{ flex: 1, marginLeft: 12 }}>
         <View style={styles.homeRow}>
-          <Text style={styles.homeLabel}>Home</Text>
-          <Ionicons name="chevron-down" size={14} color={colors.inkSoft} />
+          <Text style={styles.homeLabel}>Current Location</Text>
+          <ChevronDown size={14} color={colors.inkSoft} strokeWidth={2.5} />
         </View>
         <View style={styles.locationRow}>
-          <Ionicons name="location" size={12} color={colors.gradientMid} />
+          <MapPin size={13} color={colors.brand} strokeWidth={2.5} />
           <Text style={styles.locationText} numberOfLines={1}>{locationLabel}</Text>
         </View>
       </View>
 
       <Pressable style={styles.iconBtn} onPress={onPressBell}>
-        <Ionicons name="notifications-outline" size={21} color={colors.ink} />
+        <Bell size={19} color={colors.ink} strokeWidth={2} />
         {!!unreadCount && <View style={styles.dot} />}
       </Pressable>
       <Pressable style={styles.iconBtn} onPress={onPressBag}>
-        <Ionicons name="bag-outline" size={21} color={colors.ink} />
+        <ShoppingBag size={19} color={colors.ink} strokeWidth={2} />
       </Pressable>
     </View>
   );

@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Pencil, Star, Receipt } from 'lucide-react-native';
 import { getBusinessImageUrl } from '../businessImages';
 import { darkColors, fonts, radius } from '../theme';
 
@@ -10,16 +10,16 @@ export default function OwnerBusinessCard({ business, onPress }) {
       <View style={styles.body}>
         <View style={styles.headRow}>
           <Text style={styles.name} numberOfLines={1}>{business.businessName}</Text>
-          <Ionicons name="create-outline" size={16} color={darkColors.accent} />
+          <Pencil size={15} color={darkColors.accent} strokeWidth={2.2} />
         </View>
         <Text style={styles.address} numberOfLines={1}>{business.address}</Text>
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <Ionicons name="star" size={11} color={darkColors.stamp} />
+            <Star size={11} color={darkColors.stamp} fill={darkColors.stamp} />
             <Text style={styles.statText}>{Number(business.averageRating).toFixed(1)} ({business.reviewCount})</Text>
           </View>
           <View style={styles.statItem}>
-            <Ionicons name="receipt-outline" size={11} color={darkColors.textMuted} />
+            <Receipt size={11} color={darkColors.textMuted} strokeWidth={2} />
             <Text style={styles.statText}>{business.totalBookings} bookings</Text>
           </View>
           {business.offersDelivery && (
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   image: {
-    width: 84,
+    width: 88,
     backgroundColor: darkColors.cardBorder,
   },
   body: {
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
+    gap: 4,
   },
   statText: {
     fontFamily: fonts.body,

@@ -35,6 +35,13 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(org.springframework.web.client.RestClientResponseException.class)
+    public ResponseEntity<Map<String, Object>> handleRestClientError(org.springframework.web.client.RestClientResponseException ex) {
+        String paystackMsg = ex.getResponseBodyAsString();
+        String message = (paystackMsg != null && !paystackMsg.isBlank()) ? paystackMsg : ex.getMessage();
+        return buildResponse(HttpStatus.BAD_GATEWAY, "Payment gateway response: " + message);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();

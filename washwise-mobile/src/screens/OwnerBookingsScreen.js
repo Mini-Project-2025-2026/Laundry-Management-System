@@ -23,10 +23,12 @@ export default function OwnerBookingsScreen() {
     isRefresh ? setRefreshing(true) : setLoading(true);
     setError('');
     try {
-      const myBusinesses = await api.getMyBusinesses();
+      const [myBusinesses, ownerBookings] = await Promise.all([
+        api.getMyBusinesses(),
+        api.getOwnerBookings(),
+      ]);
       setBusinesses(myBusinesses);
-      const all = await Promise.all(myBusinesses.map((b) => api.getBusinessBookings(b.id)));
-      setBookings(all.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+      setBookings(ownerBookings);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -121,8 +123,15 @@ export default function OwnerBookingsScreen() {
                   <Text style={styles.customerName}>{item.customer?.fullName}</Text>
                   <Text style={styles.code}>{item.bookingCode}</Text>
                 </View>
-                <View style={styles.statusPill}>
-                  <Text style={styles.statusPillText}>{titleCase(item.status)}</Text>
+                <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+                  <View style={[styles.paymentPill, item.paymentStatus === 'PAID' ? styles.paymentPillPaid : styles.paymentPillUnpaid]}>
+                    <Text style={[styles.paymentPillText, item.paymentStatus === 'PAID' ? styles.paymentTextPaid : styles.paymentTextUnpaid]}>
+                      {item.paymentStatus === 'PAID' ? `Paid GHS ${Number(item.paidAmount || 0).toFixed(2)}` : 'Unpaid'}
+                    </Text>
+                  </View>
+                  <View style={styles.statusPill}>
+                    <Text style={styles.statusPillText}>{titleCase(item.status)}</Text>
+                  </View>
                 </View>
               </View>
               <Text style={styles.meta}>
@@ -220,6 +229,27 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodySemiBold,
     fontSize: 10,
     color: darkColors.accent,
+  },
+  paymentPill: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: radius.pill,
+  },
+  paymentPillPaid: {
+    backgroundColor: darkColors.goodSoft,
+  },
+  paymentPillUnpaid: {
+    backgroundColor: 'rgba(226, 166, 59, 0.15)',
+  },
+  paymentTextPaid: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 10,
+    color: darkColors.good,
+  },
+  paymentTextUnpaid: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 10,
+    color: darkColors.stamp,
   },
   meta: {
     fontFamily: fonts.body,

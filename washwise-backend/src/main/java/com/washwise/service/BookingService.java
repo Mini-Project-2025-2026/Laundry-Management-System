@@ -28,18 +28,32 @@ public class BookingService {
     );
 
     public Booking create(User customer, BookingRequest request) {
-        if (customer.getRole() != UserRole.CUSTOMER) {
-            throw new IllegalStateException("Only customer accounts can create bookings");
-        }
         LaundryBusiness business = laundryBusinessService.getById(request.getLaundryBusinessId());
-        if (request.isDeliveryRequested() && !business.isOffersDelivery()) {
-            throw new IllegalArgumentException("This business does not offer delivery");
+        boolean isCourierPickup = "COURIER_PICKUP".equalsIgnoreCase(request.getPickupType());
+        boolean isCourierDelivery = "COURIER_DELIVERY".equalsIgnoreCase(request.getReturnType());
+        boolean requiresDelivery = request.isDeliveryRequested() || isCourierPickup || isCourierDelivery;
+
+        if (requiresDelivery && !business.isOffersDelivery()) {
+            throw new IllegalArgumentException("This business does not offer delivery or courier pickup");
         }
 
         Booking booking = new Booking();
         booking.setCustomer(customer);
         booking.setLaundryBusiness(business);
-        booking.setDeliveryRequested(request.isDeliveryRequested());
+        booking.setDeliveryRequested(requiresDelivery);
+        booking.setPickupType(request.getPickupType() != null ? request.getPickupType() : (request.isDeliveryRequested() ? "COURIER_PICKUP" : "CUSTOMER_DROPOFF"));
+        booking.setReturnType(request.getReturnType() != null ? request.getReturnType() : (request.isDeliveryRequested() ? "COURIER_DELIVERY" : "CUSTOMER_PICKUP"));
+
+        java.math.BigDecimal sFee = request.getServiceFee() != null ? request.getServiceFee() : java.math.BigDecimal.ZERO;
+        java.math.BigDecimal cFee = request.getCollectionFee() != null ? request.getCollectionFee() : java.math.BigDecimal.ZERO;
+        java.math.BigDecimal dFee = request.getDeliveryFee() != null ? request.getDeliveryFee() : java.math.BigDecimal.ZERO;
+        java.math.BigDecimal total = request.getTotalAmount() != null ? request.getTotalAmount() : sFee.add(cFee).add(dFee);
+
+        booking.setServiceFee(sFee);
+        booking.setCollectionFee(cFee);
+        booking.setDeliveryFee(dFee);
+        booking.setTotalAmount(total);
+        booking.setDeliveryAddress(request.getDeliveryAddress());
         booking.setNotes(request.getNotes());
         booking.setBookingCode(generateBookingCode());
         Booking saved = bookingRepository.save(booking);
@@ -104,9 +118,23 @@ public class BookingService {
         return saved;
     }
 
+    @Transactional(readOnly = true)
+    public List<Booking> getForOwner(User owner) {
+        if (owner.getRole() != UserRole.LAUNDRY_OWNER) {
+            throw new IllegalStateException("Only laundry owners can view their business bookings");
+        }
+        return bookingRepository.findByLaundryBusinessOwnerIdOrderByCreatedAtDesc(owner.getId());
+    }
+
+    private static final String CODE_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+
     private String generateBookingCode() {
         String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        int randomPart = ThreadLocalRandom.current().nextInt(1000, 9999);
-        return "BK-" + datePart + "-" + randomPart;
+        StringBuilder sb = new StringBuilder(6);
+        for (int i = 0; i < 6; i++) {
+            int idx = ThreadLocalRandom.current().nextInt(CODE_ALPHABET.length());
+            sb.append(CODE_ALPHABET.charAt(idx));
+        }
+        return "BK-" + datePart + "-" + sb;
     }
 }

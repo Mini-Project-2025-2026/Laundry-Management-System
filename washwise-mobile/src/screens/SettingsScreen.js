@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useApi } from '../api/client';
 import SettingsRow from '../components/SettingsRow';
 import ApiSettingsBanner from '../components/ApiSettingsBanner';
@@ -16,8 +16,12 @@ export default function SettingsScreen() {
   const close = () => setActiveModal(null);
 
   const handleDelete = async () => {
-    await api.deleteAccount();
-    logout();
+    try {
+      await api.deleteAccount();
+      logout();
+    } catch (err) {
+      Alert.alert('Delete Account Failed', err.message || 'An error occurred while deleting your account.');
+    }
   };
 
   return (

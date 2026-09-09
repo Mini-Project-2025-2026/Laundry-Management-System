@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, Pressable, FlatList, StyleSheet, RefreshControl } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Plus } from 'lucide-react-native';
 import { useApi } from '../api/client';
 import StatBar from '../components/StatBar';
 import OwnerBusinessCard from '../components/OwnerBusinessCard';
@@ -65,7 +65,7 @@ export default function MyBusinessScreen() {
           <Text style={styles.subtitle}>Manage your laundry listings</Text>
         </View>
         <Pressable style={styles.addBtn} onPress={openNew}>
-          <Ionicons name="add" size={16} color="#fff" />
+          <Plus size={16} color="#fff" strokeWidth={2.5} />
           <Text style={styles.addBtnText}>Add</Text>
         </Pressable>
       </View>

@@ -48,6 +48,9 @@ full details, including simulator vs. physical-device addressing.
   push.
 - Log in as owner@demo.com to see the dark-navy owner dashboard (Business/
   Orders tabs); customer@demo.com sees the light-themed customer side.
-- Paystack test checkout is available from customer bookings. Set
-  `PAYSTACK_SECRET_KEY` in the backend environment before using it; never put
-  the secret key in the mobile `.env`.
+- Paystack checkout is integrated for customer bookings with full support for
+  Cards and Mobile Money (GHS currency). A built-in Sandbox Simulator is
+  active out-of-the-box for demo testing. For live/test keys, configure
+  `PAYSTACK_SECRET_KEY` in the backend environment (never on the mobile client).
+  The backend also includes an HMAC-SHA512 verified webhook listener for async
+  payment confirmations.

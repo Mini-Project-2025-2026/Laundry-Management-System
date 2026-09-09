@@ -1,50 +1,50 @@
-// Same visual identity as the web console: a counter clerk's order ticket,
-// stamped as it moves through the wash stages. Cool "launderette tile"
-// palette rather than a generic app-template look.
+// Fresh, airy Light Sky Blue palette inspired by modern Scandinavian
+// laundromats — crisp porcelain surfaces, fresh linen whites, and luminous sky blue accents.
 
 export const colors = {
-  ink: '#1C2430',
-  inkSoft: '#5B6B7C',
-  paper: '#EDEEE9',
-  panel: '#FFFFFF',
-  line: '#DCDCD4',
-  steel: '#2B5876',
-  steelDark: '#1D3F57',
-  stamp: '#E2A63B',
-  stampDark: '#B6822A',
-  stampInk: '#2A1C04',
-  good: '#3F7D5C',
-  goodSoft: '#E5F0EA',
-  alert: '#C1502E',
-  alertSoft: '#F7E6E0',
-  warnSoft: '#FAF0DD',
-  warnInk: '#8A6A1F',
-  // Vivid blue used for the splash + welcome gradient (per shared UI reference).
-  gradientTop: '#12308C',
-  gradientMid: '#1B54E8',
+  ink: '#0F172A',         // Deep slate, crisp & readable
+  inkSoft: '#64748B',     // Neutral slate text
+  paper: '#F8FAFC',       // Clean, fresh porcelain background
+  panel: '#FFFFFF',       // Pure card white
+  panelAlt: '#F0F9FF',    // Soft ice sky tinted surface
+  line: '#E2E8F0',        // Subtle crisp border
+  steel: '#0284C7',       // Sky blue accent
+  steelDark: '#0369A1',   // Deep sky tone
+  tabBarBg: '#FFFFFF',    // Clean bright tab bar
+  tabBarBorder: '#E2E8F0',
+  stamp: '#F59E0B',       // Warm honey amber for stars & badges
+  stampDark: '#D97706',
+  stampInk: '#78350F',
+  good: '#10B981',        // Fresh emerald green
+  goodSoft: '#ECFDF5',
+  alert: '#EF4444',       // Clean coral red
+  alertSoft: '#FEF2F2',
+  warnSoft: '#FFFBEB',
+  warnInk: '#B45309',
+  brand: '#0EA5E9',       // Luminous light sky blue primary
+  brandDark: '#0284C7',   // Rich sky contrast
+  brandSoft: '#E0F2FE',   // Fresh water soft tint
+  brandLight: '#F0F9FF',  // Pale ice blue background
+  gradientTop: '#0284C7', // Clean sky top
+  gradientMid: '#0EA5E9', // Luminous light sky blue
 };
 
-// Dark-navy palette for the laundry-owner dashboard screens (Business/Orders),
-// per a separate shared UI reference — kept distinct from the light customer
-// theme above rather than mixed in, since only the owner side uses it.
+// Owner dashboard palette (refined slate-blue rather than muddy black)
 export const darkColors = {
-  bg: '#0A1B32',
-  card: '#132A4D',
-  cardBorder: '#22385C',
-  accent: '#1B54E8',
-  accentSoft: '#1E3A6B',
+  bg: '#0F172A',
+  card: '#1E293B',
+  cardBorder: '#334155',
+  accent: '#0EA5E9',
+  accentSoft: '#0284C7',
   textPrimary: '#FFFFFF',
-  textMuted: '#8CA3C4',
-  good: '#2FBF71',
-  goodSoft: '#12331F',
-  alert: '#E2574C',
-  alertSoft: '#3A1E1C',
-  stamp: '#E2A63B',
+  textMuted: '#94A3B8',
+  good: '#10B981',
+  goodSoft: '#064E3B',
+  alert: '#EF4444',
+  alertSoft: '#450A0A',
+  stamp: '#F59E0B',
 };
 
-// Font family keys — matched to what App.js loads via useFonts().
-// Falls back to system fonts automatically if a font hasn't loaded yet,
-// since RN silently ignores an unrecognized fontFamily.
 export const fonts = {
   display: 'SpaceGrotesk_600SemiBold',
   body: 'Inter_400Regular',
@@ -55,9 +55,9 @@ export const fonts = {
 };
 
 export const radius = {
-  sm: 6,
-  md: 10,
-  lg: 14,
+  sm: 8,
+  md: 14,
+  lg: 20,
   pill: 999,
 };
 

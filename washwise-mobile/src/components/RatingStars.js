@@ -1,5 +1,5 @@
 import { View, Pressable, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Star } from 'lucide-react-native';
 import { colors } from '../theme';
 
 /**
@@ -14,19 +14,20 @@ export default function RatingStars({ value = 0, size = 15, onChange, spacing = 
     <View style={[styles.row, { gap: spacing }]}>
       {stars.map((n) => {
         const filled = n <= Math.round(value);
-        const Star = (
-          <Ionicons
-            name={filled ? 'star' : 'star-outline'}
+        const starIcon = (
+          <Star
             size={size}
-            color={colors.stamp}
+            color={filled ? colors.stamp : '#CBD5E1'}
+            fill={filled ? colors.stamp : 'transparent'}
+            strokeWidth={2}
           />
         );
         return interactive ? (
           <Pressable key={n} onPress={() => onChange(n)} hitSlop={6}>
-            {Star}
+            {starIcon}
           </Pressable>
         ) : (
-          <View key={n}>{Star}</View>
+          <View key={n}>{starIcon}</View>
         );
       })}
     </View>

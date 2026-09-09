@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,8 +29,16 @@ public class ExpoPushService {
     private static final Logger log = LoggerFactory.getLogger(ExpoPushService.class);
     private static final String EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
+    public ExpoPushService() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(5000);
+        this.restTemplate = new RestTemplate(factory);
+    }
+
+    @Async
     public void send(String expoPushToken, String title, String body) {
         if (expoPushToken == null || expoPushToken.isBlank()) {
             return;

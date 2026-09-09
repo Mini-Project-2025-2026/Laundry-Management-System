@@ -8,8 +8,9 @@ const TAG_POOL = [
 ];
 
 export function getBusinessTags(businessId) {
-  const a = TAG_POOL[businessId % TAG_POOL.length];
-  const b = TAG_POOL[(businessId + 3) % TAG_POOL.length];
+  const id = Math.abs(Number(businessId) || 0);
+  const a = TAG_POOL[id % TAG_POOL.length];
+  const b = TAG_POOL[(id + 3) % TAG_POOL.length];
   return a === b ? [a] : [a, b];
 }
 
@@ -17,5 +18,6 @@ export function getBusinessTags(businessId) {
 // shared/global (see the counter-tool price_list table), not per-business,
 // so this is a display-only stand-in until per-business pricing exists.
 export function getStartingPrice(businessId) {
-  return 15 + (businessId % 20) * 2;
+  const id = Math.abs(Number(businessId) || 0);
+  return 15 + (id % 20) * 2;
 }

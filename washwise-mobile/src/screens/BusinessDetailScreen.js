@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MapPin, Clock, Calendar, Bike, Footprints } from 'lucide-react-native';
 import { useApi } from '../api/client';
+import { getCurrentLocation } from '../geo';
 import ScreenHeader from '../components/ScreenHeader';
 import MapView from '../components/MapView';
 import RatingStars from '../components/RatingStars';
 import GradientButton from '../components/GradientButton';
 import BookingModal from '../components/BookingModal';
+import PaystackPaymentModal from '../components/PaystackPaymentModal';
 import { colors, fonts, radius } from '../theme';
 
 const DAY_ORDER = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
@@ -30,6 +32,14 @@ export default function BusinessDetailScreen({ businessId, onBack, onBooked }) {
   const [error, setError] = useState('');
   const [showBooking, setShowBooking] = useState(false);
   const [bookingMessage, setBookingMessage] = useState('');
+  const [userLocation, setUserLocation] = useState(null);
+  const [payingBooking, setPayingBooking] = useState(null);
+
+  useEffect(() => {
+    getCurrentLocation().then((loc) => {
+      if (loc) setUserLocation(loc);
+    });
+  }, []);
 
   const load = useCallback(
     async (isRefresh = false) => {
@@ -53,9 +63,10 @@ export default function BusinessDetailScreen({ businessId, onBack, onBooked }) {
   }, [load]);
 
   const handleBook = async (payload) => {
-    await api.createBooking(payload);
-    setBookingMessage('Booking confirmed! Track it in the Bookings tab.');
+    const created = await api.createBooking(payload);
+    setBookingMessage('Booking confirmed! Ready for payment.');
     onBooked?.();
+    setPayingBooking(created);
   };
 
   if (loading) {
@@ -88,7 +99,7 @@ export default function BusinessDetailScreen({ businessId, onBack, onBooked }) {
       >
         <MapView latitude={business.latitude} longitude={business.longitude} label={business.businessName} />
         <View style={styles.addressRow}>
-          <Ionicons name="location-outline" size={13} color={colors.inkSoft} />
+          <MapPin size={14} color={colors.inkSoft} strokeWidth={2.2} />
           <Text style={styles.addressText}>{business.address}</Text>
         </View>
 
@@ -102,21 +113,21 @@ export default function BusinessDetailScreen({ businessId, onBack, onBooked }) {
 
         <View style={styles.infoCard}>
           <View style={styles.infoRow}>
-            <Ionicons name="time-outline" size={16} color={colors.gradientMid} />
+            <Clock size={16} color={colors.gradientMid} strokeWidth={2} />
             <Text style={styles.infoText}>
               {formatHour(business.openTime)} – {formatHour(business.closeTime)}
             </Text>
           </View>
           <View style={styles.infoRow}>
-            <Ionicons name="calendar-outline" size={16} color={colors.gradientMid} />
+            <Calendar size={16} color={colors.gradientMid} strokeWidth={2} />
             <Text style={styles.infoText}>{sortedDays.map((d) => DAY_SHORT[d]).join(', ')}</Text>
           </View>
           <View style={styles.infoRow}>
-            <Ionicons
-              name={business.offersDelivery ? 'bicycle-outline' : 'walk-outline'}
-              size={16}
-              color={colors.gradientMid}
-            />
+            {business.offersDelivery ? (
+              <Bike size={16} color={colors.gradientMid} strokeWidth={2} />
+            ) : (
+              <Footprints size={16} color={colors.gradientMid} strokeWidth={2} />
+            )}
             <Text style={styles.infoText}>
               {business.offersDelivery ? 'Offers pickup & delivery' : 'Pickup only'}
             </Text>
@@ -150,7 +161,24 @@ export default function BusinessDetailScreen({ businessId, onBack, onBooked }) {
       </View>
 
       {showBooking && (
-        <BookingModal business={business} onClose={() => setShowBooking(false)} onSubmit={handleBook} />
+        <BookingModal
+          business={business}
+          userLocation={userLocation}
+          onClose={() => setShowBooking(false)}
+          onSubmit={handleBook}
+        />
+      )}
+
+      {payingBooking && (
+        <PaystackPaymentModal
+          booking={payingBooking}
+          api={api}
+          onClose={() => setPayingBooking(null)}
+          onPaid={() => {
+            setBookingMessage('Payment successful! Your laundry order is confirmed.');
+            setPayingBooking(null);
+          }}
+        />
       )}
     </View>
   );

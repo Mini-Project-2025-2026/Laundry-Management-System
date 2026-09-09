@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Check, XCircle } from 'lucide-react-native';
 import { darkColors, fonts } from '../theme';
 
 function shortDate(dateStr) {
@@ -9,13 +9,19 @@ function shortDate(dateStr) {
 }
 
 const STAGES = ['PENDING', 'ACCEPTED', 'IN_PROGRESS', 'READY', 'COMPLETED'];
-const LABELS = { PENDING: 'Placed', ACCEPTED: 'Accepted', IN_PROGRESS: 'In Progress', READY: 'Ready', COMPLETED: 'Done' };
+const LABELS = {
+  PENDING: 'Placed',
+  ACCEPTED: 'Accepted',
+  IN_PROGRESS: 'In Progress',
+  READY: 'Ready',
+  COMPLETED: 'Done',
+};
 
 export default function OrderTimeline({ status, updatedAt }) {
   if (status === 'CANCELLED') {
     return (
       <View style={styles.cancelledRow}>
-        <Ionicons name="close-circle" size={16} color={darkColors.alert} />
+        <XCircle size={16} color={darkColors.alert} strokeWidth={2.2} />
         <Text style={styles.cancelledText}>Cancelled</Text>
       </View>
     );
@@ -33,7 +39,7 @@ export default function OrderTimeline({ status, updatedAt }) {
           <View key={stage} style={styles.step}>
             <View style={styles.connectorRow}>
               <View style={[styles.dot, done && styles.dotDone, current && styles.dotCurrent]}>
-                {done && <Ionicons name="checkmark" size={10} color="#fff" />}
+                {done && <Check size={10} color="#fff" strokeWidth={3} />}
               </View>
               {!isLast && <View style={[styles.line, done && styles.lineDone]} />}
             </View>

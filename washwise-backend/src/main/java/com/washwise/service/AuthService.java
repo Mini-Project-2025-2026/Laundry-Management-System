@@ -5,6 +5,10 @@ import com.washwise.dto.ChangePasswordRequest;
 import com.washwise.dto.LoginRequest;
 import com.washwise.dto.SignupRequest;
 import com.washwise.entity.User;
+import com.washwise.repository.BookingRepository;
+import com.washwise.repository.LaundryBusinessRepository;
+import com.washwise.repository.NotificationRepository;
+import com.washwise.repository.ReviewRepository;
 import com.washwise.repository.UserRepository;
 import com.washwise.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final ReviewRepository reviewRepository;
+    private final NotificationRepository notificationRepository;
+    private final LaundryBusinessRepository laundryBusinessRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -67,6 +75,22 @@ public class AuthService {
     }
 
     public void deleteAccount(User user) {
+        if (user == null || user.getId() == null) {
+            return;
+        }
+        Long userId = user.getId();
+
+        notificationRepository.deleteByUserId(userId);
+
+        if (user.getRole() == com.washwise.entity.UserRole.LAUNDRY_OWNER) {
+            reviewRepository.deleteByLaundryBusinessOwnerId(userId);
+            bookingRepository.deleteByLaundryBusinessOwnerId(userId);
+            laundryBusinessRepository.deleteByOwnerId(userId);
+        }
+
+        reviewRepository.deleteByCustomerId(userId);
+        bookingRepository.deleteByCustomerId(userId);
+
         userRepository.delete(user);
     }
 

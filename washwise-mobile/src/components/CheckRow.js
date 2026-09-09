@@ -1,14 +1,14 @@
 import { Pressable, Text, View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { colors, fonts } from '../theme';
+import { Check } from 'lucide-react-native';
+import { colors, fonts, radius } from '../theme';
 
 export default function CheckRow({ checked, onToggle, label }) {
   return (
     <Pressable style={styles.row} onPress={onToggle}>
       <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked && <Ionicons name="checkmark" size={14} color="#fff" />}
+        {checked && <Check size={13} color="#FFFFFF" strokeWidth={3} />}
       </View>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, checked && styles.labelChecked]}>{label}</Text>
     </Pressable>
   );
 }
@@ -21,13 +21,14 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   box: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 22,
+    height: 22,
+    borderRadius: 7,
     borderWidth: 1.5,
-    borderColor: colors.gradientMid,
+    borderColor: colors.inkSoft,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.panel,
   },
   boxChecked: {
     backgroundColor: colors.gradientMid,
@@ -35,7 +36,11 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: fonts.body,
-    fontSize: 13.5,
-    color: colors.gradientMid,
+    fontSize: 13,
+    color: colors.inkSoft,
+  },
+  labelChecked: {
+    color: colors.ink,
+    fontFamily: fonts.bodyMedium,
   },
 });

@@ -176,19 +176,26 @@ seeded automatically on first run:
 ### Paystack payments
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/api/payments/paystack/initialize` | customer | `{ bookingId, amount }`; returns a hosted Paystack authorization URL |
+| POST | `/api/payments/paystack/initialize` | customer | `{ bookingId, amount }`; returns a hosted Paystack authorization URL (or sandbox mock) |
 | POST | `/api/payments/paystack/verify` | customer | `{ reference }`; verifies with Paystack and marks the booking paid |
+| POST | `/api/payments/paystack/webhook` | public (HMAC SHA-512) | Paystack webhook listener (`x-paystack-signature` header); handles `charge.success` |
 
-For test mode, set the secret key only in the backend environment before startup:
+#### Testing & Configuration
 
-```powershell
-$env:PAYSTACK_SECRET_KEY = "sk_test_your_key_here"
-mvn spring-boot:run
-```
+1. **Built-in Sandbox / Mock Mode (Zero Setup)**:
+   By default (`PAYSTACK_MOCK_ENABLED=true`), if no `PAYSTACK_SECRET_KEY` is provided (or set to `mock`), the backend and mobile app activate the **Paystack Sandbox Simulator**. You can test full payment lifecycles, booking confirmation, in-app notifications, and receipts out of the box without needing an active merchant account.
 
-The mobile app uses the hosted Paystack checkout and never receives the secret
-key. Without `PAYSTACK_SECRET_KEY`, checkout remains visible but returns a
-clear configuration error rather than claiming a payment succeeded.
+2. **Connecting Real Paystack Test / Live Keys**:
+   To connect to live Paystack APIs (`api.paystack.co`):
+   ```powershell
+   $env:PAYSTACK_SECRET_KEY = "sk_test_your_secret_key_here"
+   $env:PAYSTACK_CURRENCY = "GHS"
+   mvn spring-boot:run
+   ```
+   Or create a `.env` file (see `.env.example`).
+
+3. **Webhook Verification**:
+   Paystack calls `POST /api/payments/paystack/webhook` when events like `charge.success` occur. The backend verifies the `x-paystack-signature` header using HMAC-SHA512 with your secret key, automatically updates the booking status to `PAID`, records `paidAmount`, and dispatches in-app notifications to both customer and business owner.
 
 ### Known simplifications (flagged intentionally)
 - **Rating** is currently a simple average of each review's overall score. Each review also stores sub-scores (cleanliness, accuracy, quality/timeliness, pricing fairness, pickup/delivery convenience) and total booking count is tracked — the data's there for a proper weighted composite formula later.

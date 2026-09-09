@@ -13,5 +13,19 @@ public class BookingRequest {
 
     private boolean deliveryRequested;
 
+    private String pickupType; // CUSTOMER_DROPOFF or COURIER_PICKUP
+
+    private String returnType; // CUSTOMER_PICKUP or COURIER_DELIVERY
+
+    private java.math.BigDecimal serviceFee;
+
+    private java.math.BigDecimal collectionFee;
+
+    private java.math.BigDecimal deliveryFee;
+
+    private java.math.BigDecimal totalAmount;
+
+    private String deliveryAddress;
+
     private String notes;
 }

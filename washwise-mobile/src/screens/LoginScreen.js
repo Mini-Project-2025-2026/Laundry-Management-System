@@ -15,7 +15,7 @@ import GradientButton from '../components/GradientButton';
 import CheckRow from '../components/CheckRow';
 import SlideFadeIn from '../components/SlideFadeIn';
 import ApiSettingsBanner from '../components/ApiSettingsBanner';
-import { colors, fonts } from '../theme';
+import { colors, fonts, radius } from '../theme';
 
 export default function LoginScreen({ onGoToSignup }) {
   const { api } = useApi();
@@ -92,9 +92,30 @@ export default function LoginScreen({ onGoToSignup }) {
               <ApiSettingsBanner />
 
               <View style={styles.demoBox}>
-                <Text style={styles.demoTitle}>Demo accounts (seeded on the backend)</Text>
-                <Text style={styles.demoLine}>Customer: customer@demo.com / password123</Text>
-                <Text style={styles.demoLine}>Laundry owner: owner@demo.com / password123</Text>
+                <Text style={styles.demoTitle}>Quick Demo Sign-In (Tap to fill)</Text>
+                <View style={styles.demoBtnRow}>
+                  <Pressable
+                    style={styles.demoBtn}
+                    onPress={() => {
+                      setEmail('customer@demo.com');
+                      setPassword('password123');
+                    }}
+                  >
+                    <Text style={styles.demoBtnTitle}>Customer Demo</Text>
+                    <Text style={styles.demoBtnSub}>customer@demo.com (Order Laundry)</Text>
+                  </Pressable>
+
+                  <Pressable
+                    style={styles.demoBtn}
+                    onPress={() => {
+                      setEmail('owner@demo.com');
+                      setPassword('password123');
+                    }}
+                  >
+                    <Text style={styles.demoBtnTitle}>Laundry Owner Demo</Text>
+                    <Text style={styles.demoBtnSub}>owner@demo.com (Manage Shop)</Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
           </ScrollView>
@@ -172,13 +193,31 @@ const styles = StyleSheet.create({
   },
   demoTitle: {
     fontFamily: fonts.bodySemiBold,
-    fontSize: 11,
-    color: colors.inkSoft,
-    marginBottom: 4,
-  },
-  demoLine: {
-    fontFamily: fonts.monoRegular,
     fontSize: 11.5,
     color: colors.inkSoft,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  demoBtnRow: {
+    gap: 8,
+  },
+  demoBtn: {
+    backgroundColor: '#F0F9FF',
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+    borderRadius: radius.sm,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+  },
+  demoBtnTitle: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 12.5,
+    color: colors.gradientMid,
+  },
+  demoBtnSub: {
+    fontFamily: fonts.monoRegular,
+    fontSize: 11,
+    color: colors.inkSoft,
+    marginTop: 2,
   },
 });

@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react';
-import { View, Image, Text, Animated, Easing, StyleSheet } from 'react-native';
+import { View, Image, Text, Animated, Easing, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../theme';
 
-// Total time on screen: entrance -> slow spin -> fade out.
-const ENTRANCE_MS = 900;
-const SPIN_MS = 5200;
-const EXIT_MS = 900;
-const TOTAL_MS = ENTRANCE_MS + SPIN_MS + EXIT_MS; // ~7s
+// Total time on screen: snappy entrance -> quick spin -> fade out (~2.4s).
+const ENTRANCE_MS = 600;
+const SPIN_MS = 1300;
+const EXIT_MS = 500;
+const TOTAL_MS = ENTRANCE_MS + SPIN_MS + EXIT_MS; // ~2.4s
 
 export default function SplashScreen({ onFinish }) {
   const entrance = useRef(new Animated.Value(0)).current; // 0 -> 1, drives fade/slide/scale in
@@ -59,12 +59,13 @@ export default function SplashScreen({ onFinish }) {
   const textOpacity = entrance;
 
   return (
-    <LinearGradient
-      colors={[colors.gradientTop, colors.gradientMid, '#FFFFFF']}
-      locations={[0, 0.55, 1]}
-      style={styles.container}
-    >
-      <Animated.View style={{ opacity: exit }}>
+    <Pressable style={{ flex: 1 }} onPress={onFinish}>
+      <LinearGradient
+        colors={[colors.gradientTop, colors.gradientMid, '#FFFFFF']}
+        locations={[0, 0.55, 1]}
+        style={styles.container}
+      >
+        <Animated.View style={{ opacity: exit }}>
         <Animated.View
           style={[
             styles.logoWrap,
@@ -83,7 +84,8 @@ export default function SplashScreen({ onFinish }) {
         </Animated.View>
       </Animated.View>
     </LinearGradient>
-  );
+  </Pressable>
+);
 }
 
 const styles = StyleSheet.create({

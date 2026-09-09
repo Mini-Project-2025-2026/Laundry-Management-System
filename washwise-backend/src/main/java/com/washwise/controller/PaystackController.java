@@ -29,4 +29,10 @@ public class PaystackController {
                                       @Valid @RequestBody PaymentVerifyRequest request) {
         return paystackService.verify(customer, request.getReference());
     }
+
+    @PostMapping("/webhook")
+    public Map<String, Object> webhook(@RequestBody String payload,
+                                       @RequestHeader(value = "x-paystack-signature", required = false) String signature) {
+        return paystackService.processWebhook(payload, signature);
+    }
 }

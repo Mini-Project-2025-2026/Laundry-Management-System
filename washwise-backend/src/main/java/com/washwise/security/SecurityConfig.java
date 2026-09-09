@@ -69,17 +69,27 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public: auth endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Public: auth signup & login
+                        .requestMatchers(HttpMethod.POST, "/api/auth/signup", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/me", "/api/auth/change-password", "/api/auth/push-token").authenticated()
                         // Must come BEFORE the general public GET rule below, since
                         // Spring Security uses first-match-wins and "mine" is owner-only.
                         .requestMatchers(HttpMethod.GET, "/api/laundry-businesses/mine").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/laundry-businesses/**").permitAll()
+                        // Paystack webhook is called by Paystack servers (verified via HMAC SHA-512 signature)
+                        .requestMatchers(HttpMethod.POST, "/api/payments/paystack/webhook").permitAll()
                         // Everything from the original counter/staff system stays open for now
                         // (it has no auth concept of its own yet).
                         .requestMatchers("/api/customers/**", "/api/orders/**", "/api/price-list/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(eh -> eh
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Your session has expired. Please log in again.\"}");
+                        })
                 )
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())) // needed for h2-console
                 .authenticationProvider(authenticationProvider())

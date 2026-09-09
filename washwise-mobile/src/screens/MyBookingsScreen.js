@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl, Pressable } from 'react-native';
+import { CheckCircle2, CreditCard, Bike, Footprints, MapPin } from 'lucide-react-native';
 import { useApi } from '../api/client';
 import StatusTrack from '../components/StatusTrack';
 import ReviewModal from '../components/ReviewModal';
@@ -70,10 +71,53 @@ export default function MyBookingsScreen() {
               <Text style={styles.businessName}>{item.laundryBusiness?.businessName}</Text>
               <Text style={styles.code}>{item.bookingCode}</Text>
             </View>
-            <Text style={styles.meta}>
-              {item.deliveryRequested ? 'Delivery' : 'Pickup'}
-              {item.notes ? ` · ${item.notes}` : ''}
-            </Text>
+            {/* Handover Stages Badges */}
+            <View style={styles.handoverBadgeRow}>
+              <View style={styles.handoverBadge}>
+                {item.pickupType === 'COURIER_PICKUP' ? (
+                  <Bike size={11} color={colors.gradientMid} />
+                ) : (
+                  <Footprints size={11} color={colors.inkSoft} />
+                )}
+                <Text style={styles.handoverBadgeText}>
+                  Before wash: {item.pickupType === 'COURIER_PICKUP' ? 'Courier Pickup' : 'Drop-off at shop'}
+                </Text>
+              </View>
+
+              <View style={styles.handoverBadge}>
+                {item.returnType === 'COURIER_DELIVERY' ? (
+                  <Bike size={11} color={colors.gradientMid} />
+                ) : (
+                  <Footprints size={11} color={colors.inkSoft} />
+                )}
+                <Text style={styles.handoverBadgeText}>
+                  After wash: {item.returnType === 'COURIER_DELIVERY' ? 'Doorstep Delivery' : 'Shop Pick-up'}
+                </Text>
+              </View>
+            </View>
+
+            {item.deliveryAddress ? (
+              <View style={styles.addressRow}>
+                <MapPin size={12} color={colors.gradientMid} />
+                <Text style={styles.addressText} numberOfLines={1}>
+                  {item.deliveryAddress}
+                </Text>
+              </View>
+            ) : null}
+
+            {item.notes ? (
+              <Text style={styles.notesText} numberOfLines={2}>
+                Notes: {item.notes}
+              </Text>
+            ) : null}
+
+            {/* Total and Fee Summary */}
+            {item.totalAmount != null && Number(item.totalAmount) > 0 ? (
+              <View style={styles.priceRow}>
+                <Text style={styles.priceLabel}>Order Total:</Text>
+                <Text style={styles.priceVal}>GHS {Number(item.totalAmount).toFixed(2)}</Text>
+              </View>
+            ) : null}
 
             <StatusTrack status={item.status} stages={BOOKING_STAGES} labels={STAGE_LABELS} />
 
@@ -85,11 +129,26 @@ export default function MyBookingsScreen() {
             {item.status === 'COMPLETED' && item.reviewed && (
               <Text style={styles.reviewedText}>Thanks for your review!</Text>
             )}
-            {item.status !== 'CANCELLED' && item.paymentStatus !== 'PAID' && (
+            {item.paymentStatus === 'PAID' ? (
+              <View style={styles.paidBadge}>
+                <CheckCircle2 size={15} color={colors.good} strokeWidth={2.2} />
+                <Text style={styles.paidBadgeText}>
+                  Paid: GHS {Number(item.paidAmount || item.totalAmount || 0).toFixed(2)}
+                </Text>
+                {item.paymentReference ? (
+                  <Text style={styles.paidRefText} numberOfLines={1}>
+                    · {item.paymentReference}
+                  </Text>
+                ) : null}
+              </View>
+            ) : item.status !== 'CANCELLED' ? (
               <Pressable style={styles.payBtn} onPress={() => setPayingBooking(item)}>
-                <Text style={styles.payBtnText}>Pay securely with Paystack</Text>
+                <CreditCard size={14} color={colors.gradientMid} strokeWidth={2} style={{ marginRight: 6 }} />
+                <Text style={styles.payBtnText}>
+                  Pay GHS {Number(item.totalAmount || 50.0).toFixed(2)} with Paystack
+                </Text>
               </Pressable>
-            )}
+            ) : null}
           </View>
         )}
       />
@@ -163,11 +222,68 @@ const styles = StyleSheet.create({
     fontSize: 11.5,
     color: colors.inkSoft,
   },
-  meta: {
+  handoverBadgeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  handoverBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: '#F0F9FF',
+    borderWidth: 1,
+    borderColor: '#E0F2FE',
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: radius.pill,
+  },
+  handoverBadgeText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 11,
+    color: colors.ink,
+  },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 5,
+  },
+  addressText: {
     fontFamily: fonts.body,
     fontSize: 12,
     color: colors.inkSoft,
-    marginTop: 2,
+    flex: 1,
+  },
+  notesText: {
+    fontFamily: fonts.body,
+    fontSize: 11.5,
+    color: colors.inkSoft,
+    fontStyle: 'italic',
+    marginTop: 4,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colors.paper,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: radius.sm,
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  priceLabel: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 12,
+    color: colors.ink,
+  },
+  priceVal: {
+    fontFamily: fonts.display,
+    fontSize: 14,
+    color: colors.gradientMid,
   },
   reviewBtn: {
     marginTop: 8,
@@ -191,6 +307,8 @@ const styles = StyleSheet.create({
   payBtn: {
     marginTop: 10,
     alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.gradientMid,
     borderRadius: radius.sm,
@@ -201,6 +319,28 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodySemiBold,
     fontSize: 12,
     color: colors.gradientMid,
+  },
+  paidBadge: {
+    marginTop: 10,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.goodSoft,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: radius.sm,
+    gap: 6,
+  },
+  paidBadgeText: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 12,
+    color: colors.good,
+  },
+  paidRefText: {
+    fontFamily: fonts.monoRegular,
+    fontSize: 11,
+    color: colors.inkSoft,
+    maxWidth: 140,
   },
   empty: {
     borderWidth: 1,

@@ -15,4 +15,6 @@ public interface LaundryBusinessRepository extends JpaRepository<LaundryBusiness
            "LOWER(b.businessName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(b.address) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<LaundryBusiness> search(@Param("keyword") String keyword);
+
+    void deleteByOwnerId(Long ownerId);
 }

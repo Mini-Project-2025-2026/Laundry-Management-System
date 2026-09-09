@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
 import { useApi } from './api/client';
@@ -11,26 +11,28 @@ import MyBusinessScreen from './screens/MyBusinessScreen';
 import OwnerBookingsScreen from './screens/OwnerBookingsScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import { colors } from './theme';
+import { colors, fonts, radius } from './theme';
 
 const CUSTOMER_TABS = [
-  { key: 'explore', label: 'Explore', icon: 'compass-outline', iconActive: 'compass' },
-  { key: 'bookings', label: 'Bookings', icon: 'receipt-outline', iconActive: 'receipt' },
-  { key: 'notifications', label: 'Alerts', icon: 'notifications-outline', iconActive: 'notifications' },
-  { key: 'settings', label: 'Settings', icon: 'settings-outline', iconActive: 'settings' },
+  { key: 'explore', label: 'Explore' },
+  { key: 'bookings', label: 'Bookings' },
+  { key: 'notifications', label: 'Alerts' },
+  { key: 'settings', label: 'Settings' },
 ];
 
 const OWNER_TABS = [
-  { key: 'business', label: 'Business', icon: 'storefront-outline', iconActive: 'storefront' },
-  { key: 'bookings', label: 'Orders', icon: 'receipt-outline', iconActive: 'receipt' },
-  { key: 'notifications', label: 'Alerts', icon: 'notifications-outline', iconActive: 'notifications' },
-  { key: 'settings', label: 'Settings', icon: 'settings-outline', iconActive: 'settings' },
+  { key: 'business', label: 'Business' },
+  { key: 'bookings', label: 'Orders' },
+  { key: 'notifications', label: 'Alerts' },
+  { key: 'settings', label: 'Settings' },
 ];
 
 export default function MainApp() {
   const { api, user } = useApi();
   const isOwner = user?.role === 'LAUNDRY_OWNER';
-  const tabs = isOwner ? OWNER_TABS : CUSTOMER_TABS;
+  const [ownerViewMode, setOwnerViewMode] = useState('customer'); // Default to customer ordering mode!
+  const activeIsOwner = isOwner && ownerViewMode === 'owner';
+  const tabs = activeIsOwner ? OWNER_TABS : CUSTOMER_TABS;
   const [activeTab, setActiveTab] = useState(tabs[0].key);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -47,9 +49,6 @@ export default function MainApp() {
     refreshUnreadCount();
   }, []);
 
-  // Register for push once per login session. Silent no-op if unavailable
-  // (simulator, permission denied, Expo Go on Android) — the in-app inbox
-  // above always works regardless.
   useEffect(() => {
     let cancelled = false;
     registerForPushNotificationsAsync().then((token) => {
@@ -62,8 +61,6 @@ export default function MainApp() {
     };
   }, []);
 
-  // While the app is open, bump the badge as soon as a push arrives instead
-  // of waiting for the next tab switch.
   useEffect(() => {
     const sub = Notifications.addNotificationReceivedListener(() => {
       refreshUnreadCount();
@@ -80,6 +77,12 @@ export default function MainApp() {
     }
   };
 
+  const toggleOwnerMode = () => {
+    const newMode = ownerViewMode === 'owner' ? 'customer' : 'owner';
+    setOwnerViewMode(newMode);
+    setActiveTab(newMode === 'owner' ? 'business' : 'explore');
+  };
+
   const renderScreen = () => {
     if (activeTab === 'explore')
       return (
@@ -90,7 +93,7 @@ export default function MainApp() {
         />
       );
     if (activeTab === 'business') return <MyBusinessScreen />;
-    if (activeTab === 'bookings') return isOwner ? <OwnerBookingsScreen /> : <MyBookingsScreen />;
+    if (activeTab === 'bookings') return activeIsOwner ? <OwnerBookingsScreen /> : <MyBookingsScreen />;
     if (activeTab === 'notifications') return <NotificationsScreen />;
     if (activeTab === 'settings') return <SettingsScreen />;
     return null;
@@ -98,6 +101,20 @@ export default function MainApp() {
 
   return (
     <View style={styles.root}>
+      {isOwner && (
+        <View style={styles.modeSwitchBanner}>
+          <Text style={styles.modeSwitchText}>
+            {ownerViewMode === 'owner'
+              ? 'Viewing as Laundry Shop Owner'
+              : 'Customer Mode (Order Laundry)'}
+          </Text>
+          <Pressable style={styles.modeSwitchBtn} onPress={toggleOwnerMode}>
+            <Text style={styles.modeSwitchBtnText}>
+              {ownerViewMode === 'owner' ? 'Switch to Customer View' : 'Switch to Owner View'}
+            </Text>
+          </Pressable>
+        </View>
+      )}
       <View style={styles.body}>{renderScreen()}</View>
       <SafeAreaView edges={['bottom', 'left', 'right']} style={styles.tabBarWrap}>
         <BottomTabBar
@@ -120,6 +137,33 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabBarWrap: {
-    backgroundColor: colors.steelDark,
+    backgroundColor: '#FFFFFF',
+  },
+  modeSwitchBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#E0F2FE',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#BAE6FD',
+  },
+  modeSwitchText: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 11.5,
+    color: '#0369A1',
+    flex: 1,
+  },
+  modeSwitchBtn: {
+    backgroundColor: colors.gradientMid,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: radius.pill,
+  },
+  modeSwitchBtnText: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 11,
+    color: '#FFFFFF',
   },
 });

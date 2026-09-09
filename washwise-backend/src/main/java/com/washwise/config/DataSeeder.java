@@ -133,7 +133,8 @@ public class DataSeeder implements CommandLineRunner {
         }
 
         User owner = getOrCreateUser("Demo Laundry Owner", "owner@demo.com", "0200000000", UserRole.LAUNDRY_OWNER);
-        User customer = getOrCreateUser("Demo Customer", "customer@demo.com", "0244000000", UserRole.CUSTOMER);
+        User customer = getOrCreateUser("Demo Customer", "customer@demo.com", "0594284142", UserRole.CUSTOMER);
+        getOrCreateUser("Frank Koranteng", "frankkoranteng269@gmail.com", "0594284142", UserRole.CUSTOMER);
 
         List<User> reviewers = new ArrayList<>();
         for (int i = 0; i < REVIEWER_NAMES.length; i++) {

@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, Pressable, FlatList, StyleSheet, RefreshControl } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { CheckCircle2, RefreshCw, CreditCard, Bell } from 'lucide-react-native';
 import { useApi } from '../api/client';
 import { colors, fonts, radius } from '../theme';
 
 const ICONS = {
-  ORDER_COMPLETED: 'checkmark-circle-outline',
-  BOOKING_STATUS_CHANGE: 'refresh-circle-outline',
-  GENERAL: 'notifications-outline',
+  ORDER_COMPLETED: CheckCircle2,
+  BOOKING_STATUS_CHANGE: RefreshCw,
+  PAYMENT_CONFIRMED: CreditCard,
+  GENERAL: Bell,
 };
 
 function timeAgo(dateStr) {
@@ -74,22 +75,25 @@ export default function NotificationsScreen() {
             </View>
           )
         }
-        renderItem={({ item }) => (
-          <Pressable style={[styles.row, !item.readFlag && styles.rowUnread]} onPress={() => handlePress(item)}>
-            <View style={[styles.iconWrap, !item.readFlag && styles.iconWrapUnread]}>
-              <Ionicons
-                name={ICONS[item.type] ?? 'notifications-outline'}
-                size={18}
-                color={item.readFlag ? colors.inkSoft : colors.gradientMid}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.message}>{item.message}</Text>
-              <Text style={styles.time}>{timeAgo(item.createdAt)}</Text>
-            </View>
-            {!item.readFlag && <View style={styles.dot} />}
-          </Pressable>
-        )}
+        renderItem={({ item }) => {
+          const IconComponent = ICONS[item.type] || Bell;
+          return (
+            <Pressable style={[styles.row, !item.readFlag && styles.rowUnread]} onPress={() => handlePress(item)}>
+              <View style={[styles.iconWrap, !item.readFlag && styles.iconWrapUnread]}>
+                <IconComponent
+                  size={18}
+                  color={item.readFlag ? colors.inkSoft : colors.gradientMid}
+                  strokeWidth={2.2}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.message}>{item.message}</Text>
+                <Text style={styles.time}>{timeAgo(item.createdAt)}</Text>
+              </View>
+              {!item.readFlag && <View style={styles.dot} />}
+            </Pressable>
+          );
+        }}
       />
     </View>
   );

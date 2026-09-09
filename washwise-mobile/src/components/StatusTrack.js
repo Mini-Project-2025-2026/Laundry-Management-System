@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { Check, X } from 'lucide-react-native';
 import { colors, fonts } from '../theme';
 
 const DEFAULT_STAGES = ['RECEIVED', 'WASHING', 'DRYING', 'IRONING', 'READY', 'DELIVERED'];
@@ -13,9 +14,9 @@ export default function StatusTrack({ status, stages = DEFAULT_STAGES, cancelled
       <View style={styles.track}>
         <View style={styles.step}>
           <View style={[styles.circle, styles.circleCancelled]}>
-            <Text style={styles.circleTextCancelled}>✕</Text>
+            <X size={13} color="#fff" strokeWidth={2.5} />
           </View>
-          <Text style={styles.labelActive}>Cancelled</Text>
+          <Text style={styles.labelCancelled}>Cancelled</Text>
         </View>
       </View>
     );
@@ -39,14 +40,13 @@ export default function StatusTrack({ status, stages = DEFAULT_STAGES, cancelled
                   current && styles.circleCurrent,
                 ]}
               >
-                <Text
-                  style={[
-                    styles.circleText,
-                    (done || current) && styles.circleTextActive,
-                  ]}
-                >
-                  {done ? '✓' : i + 1}
-                </Text>
+                {done ? (
+                  <Check size={12} color="#fff" strokeWidth={2.5} />
+                ) : current ? (
+                  <View style={styles.currentDot} />
+                ) : (
+                  <Text style={styles.circleText}>{i + 1}</Text>
+                )}
               </View>
               {!isLast && (
                 <View style={[styles.connector, done && styles.connectorDone]} />
@@ -93,8 +93,14 @@ const styles = StyleSheet.create({
     borderColor: colors.steel,
   },
   circleCurrent: {
-    backgroundColor: colors.stamp,
-    borderColor: colors.stamp,
+    backgroundColor: colors.brand,
+    borderColor: colors.brand,
+  },
+  currentDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#fff',
   },
   circleCancelled: {
     backgroundColor: colors.alert,
@@ -105,13 +111,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: colors.inkSoft,
   },
-  circleTextActive: {
-    color: '#fff',
-  },
-  circleTextCancelled: {
-    color: '#fff',
-    fontFamily: fonts.monoRegular,
-    fontSize: 12,
+  labelCancelled: {
+    fontFamily: fonts.bodySemiBold,
+    color: colors.alert,
+    fontSize: 10,
+    marginTop: 4,
   },
   connector: {
     flex: 1,

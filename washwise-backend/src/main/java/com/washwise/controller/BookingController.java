@@ -36,6 +36,11 @@ public class BookingController {
         return bookingService.getForBusiness(businessId, owner);
     }
 
+    @GetMapping("/owner/mine")
+    public List<Booking> getOwnerMine(@AuthenticationPrincipal User owner) {
+        return bookingService.getForOwner(owner);
+    }
+
     @PatchMapping("/{id}/status")
     public Booking updateStatus(@AuthenticationPrincipal User owner,
                                  @PathVariable Long id,
