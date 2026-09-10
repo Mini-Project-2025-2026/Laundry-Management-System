@@ -1,76 +1,111 @@
-# WashWise
+# WashWise 🧺✨
+### Next-Generation Smart Laundry Management & On-Demand Service Platform
 
-This zip contains both halves of the app:
+[![Android APK](https://img.shields.io/badge/Android%20APK-Download%20v1.0.0-success?style=for-the-badge&logo=android)](https://expo.dev/artifacts/eas/0g1JtHb3c_O3K4Xz-3aBzCzw_gGU-dpT_D8yS0yMgCY.apk)
+[![Spring Boot](https://img.shields.io/badge/Backend-Spring%20Boot%203-brightgreen?style=for-the-badge&logo=springboot)](washwise-backend)
+[![React Native](https://img.shields.io/badge/Mobile-React%20Native%20%2F%20Expo-blue?style=for-the-badge&logo=expo)](washwise-mobile)
+
+---
+
+## 📱 Instant Download & Mobile Install
+
+Anyone visiting this repository can directly download and install the **WashWise Android App** onto their physical Android device:
+
+| Download Source | Direct Link |
+| :--- | :--- |
+| **🚀 Direct High-Speed APK Download** | [**Download WashWise.apk**](https://expo.dev/artifacts/eas/0g1JtHb3c_O3K4Xz-3aBzCzw_gGU-dpT_D8yS0yMgCY.apk) |
+| **📦 GitHub Repository File** | [**WashWise.apk** (in repository root)](WashWise.apk) |
+| **🔍 Cloud Build & QR Code** | [**Expo EAS Build Dashboard**](https://expo.dev/accounts/lokko577/projects/washwise/builds/2ec9a824-04a8-4ccd-a3d7-ed31f8ac563d) |
+
+### 📲 How to Install on Android:
+1. Tap the **[Download WashWise.apk](https://expo.dev/artifacts/eas/0g1JtHb3c_O3K4Xz-3aBzCzw_gGU-dpT_D8yS0yMgCY.apk)** link from your phone.
+2. When the download completes, tap the file notification (or find `WashWise.apk` in your `Downloads` folder).
+3. Tap **Install** *(if prompted, enable "Allow installation from unknown sources" in settings)*.
+4. Open **WashWise**!
+
+---
+
+## 💻 1-Click Desktop Launcher (For Presentations & Demonstrations)
+
+WashWise comes with a complete automated launcher for running the entire system on Windows laptops with **zero command line setup**:
+
+* **To Start**: Double-click **`Launch-WashWise.bat`**
+  - Automatically verifies Java and Node.js.
+  - Starts the Spring Boot backend on port `8080`.
+  - Boots the frontend and launches WashWise in a dedicated borderless standalone mobile frame.
+* **To Stop**: Double-click **`Stop-WashWise.bat`**
+  - Safely stops all background servers and frees ports `8080` and `8081`.
+* **To Rebuild APK**: Double-click **`Build-Android-APK.bat`**
+  - Triggers a new cloud APK compilation via Expo Application Services (EAS).
+
+---
+
+## 🏗️ System Architecture
 
 ```
 washwise-app/
-  washwise-backend/    Spring Boot API (Java) — run this first
-  washwise-mobile/     Expo / React Native app — run this second
+├── WashWise.apk          # Pre-compiled Standalone Android APK
+├── Launch-WashWise.bat   # 1-Click Windows Full-Stack Launcher
+├── Stop-WashWise.bat     # 1-Click Windows Graceful Process Stopper
+├── Build-Android-APK.bat # 1-Click Cloud APK Build Script
+│
+├── washwise-backend/     # Spring Boot REST API (Java 17+, Maven, JPA/Hibernate, Security)
+│   ├── src/main/java/com/washwise/
+│   │   ├── config/       # Security, WebMvc, Database seeders
+│   │   ├── controller/   # Auth, Orders, Businesses, Payments, Admin
+│   │   ├── model/        # User, Order, Business, Service, Review
+│   │   └── service/      # Business logic & Paystack payment integration
+│   └── pom.xml
+│
+└── washwise-mobile/      # React Native / Expo Mobile Application
+    ├── app/              # Screens & navigation (Customer & Business Owner modes)
+    ├── components/       # UI components, interactive maps, receipt cards
+    ├── services/         # API clients, auth storage, notifications
+    ├── eas.json          # EAS cloud build configuration (APK build profile)
+    └── app.json          # App manifest, permissions, package identifiers
 ```
-
-## 🚀 1-Click Desktop Executable Launcher
-
-For instant presentation on your laptop without typing any terminal commands:
-* Simply double-click **`Launch-WashWise.bat`** in the root folder!
-* It automatically starts the Spring Boot backend, boots the frontend, and opens WashWise in its own dedicated, standalone mobile app window.
-* To shut down all services cleanly after your presentation, double-click **`Stop-WashWise.bat`**.
 
 ---
 
-## 📱 Standalone Android APK (.apk)
+## 🔑 Demo Login Credentials
 
-To generate an installable Android APK file:
-```powershell
-cd washwise-mobile
-npx eas build -p android --profile preview
-```
-This builds a direct installable `.apk` file you can download and install on any Android phone.
+The system automatically initializes and seeds demo accounts and 50+ localized laundry businesses:
+
+| Role | Email | Password | Experience |
+| :--- | :--- | :--- | :--- |
+| **Customer** | `customer@demo.com` | `password123` | Clean light theme, nearby laundry discovery, booking, interactive tracking, Paystack checkout |
+| **Business Owner** | `owner@demo.com` | `password123` | Premium navy dark theme, order management, status updates, catalog editing, revenue analytics |
 
 ---
 
-## Manual Developer Quick Start
+## 💳 Payment Gateway & Testing
 
-**1. Backend** (needs Java 17+ and Maven):
-```
+WashWise features end-to-end payment processing:
+- **Paystack Integration**: Full support for Mobile Money (MTN, Vodafone/Telecel, AirtelTigo) and Debit/Credit Cards in GHS currency.
+- **Built-in Sandbox Simulator**: Allows seamless offline and evaluation testing without real charges.
+- **Live / Test Keys**: Configurable securely in `washwise-backend/.env` via `PAYSTACK_SECRET_KEY` with HMAC-SHA512 webhook signature verification.
+
+---
+
+## 🛠️ Manual Developer Quick Start
+
+### 1. Backend (Java 17+ & Maven)
+```bash
 cd washwise-backend
 mvn spring-boot:run
 ```
-Wait for "Started WashWiseApplication". It runs on port 8080 with an
-in-memory database, seeded automatically with 50+ demo laundry businesses
-and demo accounts (`customer@demo.com` / `owner@demo.com`, both
-`password123`). See `washwise-backend/README.md` for full API docs.
+API runs on `http://localhost:8080/api`.
 
-**2. Mobile app** (needs Node.js 18+ and the Expo Go app on your phone):
-```
+### 2. Mobile App (Node 18+ & npm)
+```bash
 cd washwise-mobile
 npm install
-npx expo install --fix
 npx expo start
 ```
-Scan the QR code with Expo Go. Do **not** press `w` / open it in a browser —
-this app targets iOS/Android via Expo Go only; the map and a few other
-pieces aren't built for the web preview and will error there.
+Configure the API endpoint banner on the login screen to point to your backend IP (e.g. `http://192.168.x.x:8080/api`).
 
-On first launch, tap the "Connected to…" banner on the Login screen and
-point it at your computer's LAN IP (not `localhost` — your phone is a
-separate device from your computer). See `washwise-mobile/README.md` for
-full details, including simulator vs. physical-device addressing.
+---
 
-## Notes
-- Both folders are otherwise independent projects — the backend has no
-  dependency on the mobile app's code, and vice versa. Only the running
-  backend's address (configured in-app) connects them.
-- Each subfolder has its own more detailed README with the full feature
-  list, project structure, and known simplifications.
-- The mobile app requests location permission (for the home dashboard's
-  "nearby" distances) and notification permission (for push) — both are
-  optional; the app works with either denied, just with fallback text/no
-  push.
-- Log in as owner@demo.com to see the dark-navy owner dashboard (Business/
-  Orders tabs); customer@demo.com sees the light-themed customer side.
-- Paystack checkout is integrated for customer bookings with full support for
-  Cards and Mobile Money (GHS currency). A built-in Sandbox Simulator is
-  active out-of-the-box for demo testing. For live/test keys, configure
-  `PAYSTACK_SECRET_KEY` in the backend environment (never on the mobile client).
-  The backend also includes an HMAC-SHA512 verified webhook listener for async
-  payment confirmations.
+## 📄 License & Project Info
+Developed for final year capstone & laundry management automation.
+All rights reserved © 2025–2026.

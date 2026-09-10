@@ -28,7 +28,9 @@ npm-debug.log*
 *.key
 *.mobileprovision
 
-# Android binaries
-*.apk
+# Android binaries (allow WashWise.apk for direct download)
 *.aab
+*.apk
+!WashWise.apk
+
 
