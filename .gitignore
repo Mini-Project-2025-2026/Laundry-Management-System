@@ -27,3 +27,8 @@ npm-debug.log*
 *.p12
 *.key
 *.mobileprovision
+
+# Android binaries
+*.apk
+*.aab
+
