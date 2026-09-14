@@ -44,7 +44,7 @@ if %errorlevel% equ 0 (
     echo       Backend is already running on port 8080.
 ) else (
     echo       Starting Spring Boot Backend server in background...
-    start "WashWise Backend Server (Port 8080)" /min java -jar "%ROOT_DIR%washwise-backend\target\washwise-backend-1.0.0.jar"
+    start "WashWise Backend Server (Port 8080)" /d "%ROOT_DIR%washwise-backend" /min java -jar "%ROOT_DIR%washwise-backend\target\washwise-backend-1.0.0.jar"
     
     echo       Waiting for backend to boot up...
     :wait_backend
@@ -61,9 +61,7 @@ if %errorlevel% equ 0 (
     echo       Frontend server is already running on port 8081.
 ) else (
     echo       Starting Expo Web server in background...
-    cd /d "%ROOT_DIR%washwise-mobile"
-    start "WashWise Frontend Server (Port 8081)" /min cmd /c "npx.cmd expo start --web"
-    cd /d "%ROOT_DIR%"
+    start "WashWise Frontend Server (Port 8081)" /d "%ROOT_DIR%washwise-mobile" /min cmd /c "cd /d \"%ROOT_DIR%washwise-mobile\" && npx.cmd expo start --web"
     
     echo       Waiting for frontend to bundle...
     :wait_frontend

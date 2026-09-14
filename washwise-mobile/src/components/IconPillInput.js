@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
-import { Mail, Lock, User, Phone, MapPin, Hash } from 'lucide-react-native';
+import { View, TextInput, Pressable, StyleSheet } from 'react-native';
+import { Mail, Lock, User, Phone, MapPin, Hash, Eye, EyeOff } from 'lucide-react-native';
 import { colors, fonts, radius } from '../theme';
 
 const ICON_MAP = {
@@ -15,12 +15,20 @@ const ICON_MAP = {
   'location-outline': MapPin,
 };
 
-export default function IconPillInput({ icon, onFocus, onBlur, ...inputProps }) {
+export default function IconPillInput({
+  icon,
+  onFocus,
+  onBlur,
+  secureTextEntry,
+  style,
+  ...inputProps
+}) {
   const [isFocused, setIsFocused] = useState(false);
+  const [hidePassword, setHidePassword] = useState(Boolean(secureTextEntry));
   const IconComponent = typeof icon === 'function' ? icon : (ICON_MAP[icon] || Hash);
 
   return (
-    <View style={[styles.container, isFocused && styles.containerFocused]}>
+    <View style={[styles.container, isFocused && styles.containerFocused, style]}>
       <View style={[styles.iconWrap, isFocused && styles.iconWrapFocused]}>
         <IconComponent
           size={18}
@@ -30,7 +38,8 @@ export default function IconPillInput({ icon, onFocus, onBlur, ...inputProps }) 
       </View>
       <TextInput
         style={styles.input}
-        placeholderTextColor={colors.inkSoft}
+        placeholderTextColor={colors.inkMuted || colors.inkSoft}
+        secureTextEntry={secureTextEntry ? hidePassword : false}
         onFocus={(e) => {
           setIsFocused(true);
           onFocus?.(e);
@@ -41,6 +50,19 @@ export default function IconPillInput({ icon, onFocus, onBlur, ...inputProps }) 
         }}
         {...inputProps}
       />
+      {secureTextEntry ? (
+        <Pressable
+          style={styles.eyeBtn}
+          onPress={() => setHidePassword((prev) => !prev)}
+          hitSlop={8}
+        >
+          {hidePassword ? (
+            <EyeOff size={18} color={colors.inkSoft} strokeWidth={1.8} />
+          ) : (
+            <Eye size={18} color={colors.brandDark} strokeWidth={1.8} />
+          )}
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -84,5 +106,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 14.5,
     color: colors.ink,
+  },
+  eyeBtn: {
+    padding: 6,
+    marginLeft: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

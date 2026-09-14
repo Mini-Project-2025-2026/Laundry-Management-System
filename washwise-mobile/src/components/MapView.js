@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { View, Text, Platform, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MapPin } from 'lucide-react-native';
@@ -314,23 +314,45 @@ export default function MapView({
     }
   };
 
-  if (Platform.OS === 'web') {
-    return (
-      <View style={[styles.fallback, { height }, style]}>
-        <MapPin size={24} color={colors.gradientMid} strokeWidth={2} />
-        <Text style={styles.fallbackTitle}>Interactive Laundry Map</Text>
-        <Text style={styles.fallbackText}>
-          Real-time interactive OpenStreetMap pins run natively in Expo Go on your mobile device.
-        </Text>
-      </View>
-    );
-  }
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+    const handleWebMessage = (event) => {
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        if (data?.type === 'SELECT_BUSINESS' && data.id && onSelectBusiness) {
+          const found = (businesses || []).find((b) => b.id === data.id);
+          onSelectBusiness(found || data.id);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    window.addEventListener('message', handleWebMessage);
+    return () => window.removeEventListener('message', handleWebMessage);
+  }, [businesses, onSelectBusiness]);
 
   if (!hasData) {
     return (
       <View style={[styles.fallback, { height }, style]}>
         <MapPin size={24} color={colors.inkSoft} strokeWidth={2} />
         <Text style={styles.fallbackText}>Location coordinates loading…</Text>
+      </View>
+    );
+  }
+
+  if (Platform.OS === 'web') {
+    return (
+      <View style={[styles.wrap, { height }, style]}>
+        <iframe
+          srcDoc={html}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            borderRadius: radius.md,
+          }}
+          title="Interactive Laundry Map"
+        />
       </View>
     );
   }

@@ -70,7 +70,7 @@ export default function ServicesRow({ onPressService }) {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingVertical: 4,
+    paddingVertical: 6,
     gap: 10,
   },
   tile: {
@@ -78,24 +78,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.panel,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     alignItems: 'center',
     paddingVertical: 14,
     paddingHorizontal: 8,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
+    ...shadows.sm,
   },
   tilePressed: {
-    transform: [{ scale: 0.97 }],
-    borderColor: colors.gradientMid,
+    transform: [{ scale: 0.95 }],
+    borderColor: colors.brandDark,
   },
   iconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
+    width: 46,
+    height: 46,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
@@ -107,15 +103,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   priceChip: {
-    backgroundColor: colors.paper,
+    backgroundColor: colors.panelAlt,
     borderRadius: radius.pill,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 2.5,
     marginTop: 6,
+    borderWidth: 1,
+    borderColor: '#E0F2FE',
   },
   priceText: {
-    fontFamily: fonts.monoRegular,
+    fontFamily: fonts.mono,
     fontSize: 10,
-    color: colors.inkSoft,
+    color: colors.steelDark,
   },
 });

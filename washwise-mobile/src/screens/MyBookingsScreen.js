@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl, Pressable } from 'react-native';
 import { CheckCircle2, CreditCard, Bike, Footprints, MapPin } from 'lucide-react-native';
 import { useApi } from '../api/client';
 import StatusTrack from '../components/StatusTrack';
 import ReviewModal from '../components/ReviewModal';
 import PaystackPaymentModal from '../components/PaystackPaymentModal';
-import { colors, fonts, radius } from '../theme';
+import { colors, fonts, radius, shadows } from '../theme';
 
 const BOOKING_STAGES = ['PENDING', 'ACCEPTED', 'IN_PROGRESS', 'READY', 'COMPLETED'];
 const STAGE_LABELS = {
@@ -16,9 +16,16 @@ const STAGE_LABELS = {
   COMPLETED: 'Done',
 };
 
+const TABS = [
+  { key: 'ALL', label: 'All Orders' },
+  { key: 'ACTIVE', label: 'In Progress' },
+  { key: 'COMPLETED', label: 'Completed' },
+];
+
 export default function MyBookingsScreen() {
   const { api } = useApi();
   const [bookings, setBookings] = useState([]);
+  const [activeTab, setActiveTab] = useState('ALL');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -41,6 +48,16 @@ export default function MyBookingsScreen() {
     load();
   }, [load]);
 
+  const filteredBookings = useMemo(() => {
+    if (activeTab === 'ACTIVE') {
+      return bookings.filter((b) => b.status !== 'COMPLETED' && b.status !== 'CANCELLED');
+    }
+    if (activeTab === 'COMPLETED') {
+      return bookings.filter((b) => b.status === 'COMPLETED');
+    }
+    return bookings;
+  }, [bookings, activeTab]);
+
   const handleReview = async (payload) => {
     await api.submitReview(reviewingBooking.laundryBusiness.id, { ...payload, bookingId: reviewingBooking.id });
     await load();
@@ -51,17 +68,41 @@ export default function MyBookingsScreen() {
       <Text style={styles.title}>My Bookings</Text>
       <Text style={styles.subtitle}>Track every order from placed to delivered</Text>
 
+      {/* Tabs */}
+      <View style={styles.tabRow}>
+        {TABS.map((t) => {
+          const active = activeTab === t.key;
+          return (
+            <Pressable
+              key={t.key}
+              style={[styles.tabBtn, active && styles.tabBtnActive]}
+              onPress={() => setActiveTab(t.key)}
+            >
+              <Text style={[styles.tabBtnText, active && styles.tabBtnTextActive]}>
+                {t.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <FlatList
-        data={bookings}
+        data={filteredBookings}
         keyExtractor={(b) => String(b.id)}
         contentContainerStyle={{ paddingBottom: 24 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}
         ListEmptyComponent={
           !loading && (
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>No bookings yet — find a laundry on Explore.</Text>
+              <Text style={styles.emptyText}>
+                {activeTab === 'ACTIVE'
+                  ? 'No active orders in progress.'
+                  : activeTab === 'COMPLETED'
+                  ? 'No completed orders yet.'
+                  : 'No bookings yet — find a laundry on Explore.'}
+              </Text>
             </View>
           )
         }
@@ -189,7 +230,35 @@ const styles = StyleSheet.create({
     fontSize: 12.5,
     color: colors.inkSoft,
     marginTop: 2,
+    marginBottom: 14,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    gap: 8,
     marginBottom: 16,
+  },
+  tabBtn: {
+    flex: 1,
+    paddingVertical: 7,
+    alignItems: 'center',
+    borderRadius: radius.pill,
+    backgroundColor: colors.panel,
+    borderWidth: 1,
+    borderColor: colors.line,
+    ...shadows.sm,
+  },
+  tabBtnActive: {
+    backgroundColor: colors.brandDark,
+    borderColor: colors.brandDark,
+  },
+  tabBtnText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 11.5,
+    color: colors.inkSoft,
+  },
+  tabBtnTextActive: {
+    color: '#FFFFFF',
+    fontFamily: fonts.bodySemiBold,
   },
   error: {
     fontFamily: fonts.body,
@@ -204,9 +273,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.panel,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: radius.md,
-    padding: 14,
-    marginBottom: 12,
+    borderRadius: radius.lg,
+    padding: 16,
+    marginBottom: 14,
+    ...shadows.card,
   },
   head: {
     flexDirection: 'row',

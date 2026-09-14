@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { MapPin, ChevronDown, Bell, ShoppingBag } from 'lucide-react-native';
-import { colors, fonts } from '../theme';
+import { colors, fonts, radius, shadows } from '../theme';
 
 export default function HomeHeader({ userName, locationLabel, unreadCount, onPressBell, onPressBag }) {
   return (
@@ -12,19 +12,29 @@ export default function HomeHeader({ userName, locationLabel, unreadCount, onPre
       <View style={{ flex: 1, marginLeft: 12 }}>
         <View style={styles.homeRow}>
           <Text style={styles.homeLabel}>Current Location</Text>
-          <ChevronDown size={14} color={colors.inkSoft} strokeWidth={2.5} />
+          <ChevronDown size={13} color={colors.inkSoft} strokeWidth={2.5} />
         </View>
         <View style={styles.locationRow}>
-          <MapPin size={13} color={colors.brand} strokeWidth={2.5} />
-          <Text style={styles.locationText} numberOfLines={1}>{locationLabel}</Text>
+          <MapPin size={13} color={colors.brandDark} strokeWidth={2.5} />
+          <Text style={styles.locationText} numberOfLines={1}>
+            {locationLabel || 'Locating nearest laundromats…'}
+          </Text>
         </View>
       </View>
 
-      <Pressable style={styles.iconBtn} onPress={onPressBell}>
+      <Pressable
+        style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}
+        onPress={onPressBell}
+        hitSlop={6}
+      >
         <Bell size={19} color={colors.ink} strokeWidth={2} />
         {!!unreadCount && <View style={styles.dot} />}
       </Pressable>
-      <Pressable style={styles.iconBtn} onPress={onPressBag}>
+      <Pressable
+        style={({ pressed }) => [styles.iconBtn, pressed && styles.iconBtnPressed]}
+        onPress={onPressBag}
+        hitSlop={6}
+      >
         <ShoppingBag size={19} color={colors.ink} strokeWidth={2} />
       </Pressable>
     </View>
@@ -38,52 +48,67 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.gradientMid,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: colors.brandDark,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#BAE6FD',
+    ...shadows.sm,
   },
   avatarInitial: {
     fontFamily: fonts.display,
-    fontSize: 15,
-    color: '#fff',
+    fontSize: 16,
+    color: '#FFFFFF',
   },
   homeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
+    gap: 4,
   },
   homeLabel: {
-    fontFamily: fonts.bodySemiBold,
-    fontSize: 13,
-    color: colors.ink,
+    fontFamily: fonts.bodyMedium,
+    fontSize: 12,
+    color: colors.inkSoft,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 3,
-    marginTop: 1,
+    gap: 4,
+    marginTop: 2,
   },
   locationText: {
-    fontFamily: fonts.body,
-    fontSize: 11.5,
-    color: colors.inkSoft,
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 13,
+    color: colors.ink,
   },
   iconBtn: {
-    marginLeft: 6,
-    padding: 4,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.panel,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 8,
+    borderWidth: 1,
+    borderColor: colors.line,
+    ...shadows.sm,
+  },
+  iconBtnPressed: {
+    transform: [{ scale: 0.94 }],
+    backgroundColor: '#F1F5F9',
   },
   dot: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 6,
+    right: 7,
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: colors.alert,
     borderWidth: 1.5,
-    borderColor: colors.paper,
+    borderColor: '#FFFFFF',
   },
 });

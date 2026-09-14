@@ -7,11 +7,6 @@
     "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
     "backgroundColor": "#EDEEE9",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0284C7"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.washwise.mobile"
@@ -39,7 +34,14 @@
         }
       ],
       "expo-font",
-      "expo-splash-screen",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0284C7"
+        }
+      ],
       "expo-status-bar",
       "expo-notifications"
     ],

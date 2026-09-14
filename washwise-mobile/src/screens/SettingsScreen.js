@@ -7,7 +7,7 @@ import ChangePasswordModal from '../components/ChangePasswordModal';
 import DeleteAccountModal from '../components/DeleteAccountModal';
 import LegalTextModal from '../components/LegalTextModal';
 import { PRIVACY_POLICY, TERMS_OF_SERVICE, TERMS_OF_USE } from '../legalContent';
-import { colors, fonts, radius } from '../theme';
+import { colors, fonts, radius, shadows } from '../theme';
 
 export default function SettingsScreen() {
   const { api, user, logout } = useApi();
@@ -36,9 +36,11 @@ export default function SettingsScreen() {
           <View style={{ flex: 1 }}>
             <Text style={styles.profileName}>{user?.fullName}</Text>
             <Text style={styles.profileEmail}>{user?.email}</Text>
-            <Text style={styles.profileRole}>
-              {user?.role === 'LAUNDRY_OWNER' ? 'Laundry owner account' : 'Customer account'}
-            </Text>
+            <View style={[styles.roleChip, user?.role === 'LAUNDRY_OWNER' ? styles.roleChipOwner : styles.roleChipCustomer]}>
+              <Text style={[styles.roleChipText, user?.role === 'LAUNDRY_OWNER' ? styles.roleChipTextOwner : styles.roleChipTextCustomer]}>
+                {user?.role === 'LAUNDRY_OWNER' ? '👑 Laundry Shop Owner' : '🧺 Customer Account'}
+              </Text>
+            </View>
           </View>
         </View>
 
@@ -58,6 +60,11 @@ export default function SettingsScreen() {
 
         <Text style={styles.sectionLabel}>Backend connection</Text>
         <ApiSettingsBanner />
+
+        <View style={styles.versionFooter}>
+          <Text style={styles.versionText}>WashWise v1.0.0 · Smart Laundry Platform</Text>
+          <Text style={styles.versionSubtext}>Final Year Project · Academic Year 2025/2026</Text>
+        </View>
       </ScrollView>
 
       {activeModal === 'password' && (
@@ -97,26 +104,30 @@ const styles = StyleSheet.create({
     backgroundColor: colors.panel,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: 16,
     marginBottom: 22,
+    ...shadows.card,
   },
   avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: colors.gradientMid,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: colors.brandDark,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#BAE6FD',
+    ...shadows.sm,
   },
   avatarInitial: {
     fontFamily: fonts.display,
-    fontSize: 20,
-    color: '#fff',
+    fontSize: 22,
+    color: '#FFFFFF',
   },
   profileName: {
     fontFamily: fonts.bodySemiBold,
-    fontSize: 15,
+    fontSize: 15.5,
     color: colors.ink,
   },
   profileEmail: {
@@ -125,11 +136,32 @@ const styles = StyleSheet.create({
     color: colors.inkSoft,
     marginTop: 1,
   },
-  profileRole: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 11.5,
-    color: colors.gradientMid,
-    marginTop: 3,
+  roleChip: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radius.pill,
+    marginTop: 6,
+  },
+  roleChipCustomer: {
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  roleChipOwner: {
+    backgroundColor: '#E0F2FE',
+    borderWidth: 1,
+    borderColor: '#BAE6FD',
+  },
+  roleChipText: {
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 10.5,
+  },
+  roleChipTextCustomer: {
+    color: '#047857',
+  },
+  roleChipTextOwner: {
+    color: '#0369A1',
   },
   sectionLabel: {
     fontFamily: fonts.bodySemiBold,
@@ -143,8 +175,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.panel,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     paddingHorizontal: 14,
     marginBottom: 22,
+    ...shadows.sm,
+  },
+  versionFooter: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+    gap: 4,
+  },
+  versionText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 12,
+    color: colors.inkSoft,
+  },
+  versionSubtext: {
+    fontFamily: fonts.body,
+    fontSize: 10.5,
+    color: colors.inkMuted || '#94A3B8',
   },
 });

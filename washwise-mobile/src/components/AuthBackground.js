@@ -1,8 +1,6 @@
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../theme';
-
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
 /**
  * Recreates the reference's "curved blob" look using two layered circles
@@ -12,9 +10,11 @@ const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
  * on Splash/Welcome).
  */
 export default function AuthBackground() {
-  const topBlockHeight = SCREEN_H * 0.4;
-  const carveCircleSize = SCREEN_W * 1.7;
-  const bottomBlobSize = SCREEN_W * 0.85;
+  const { width: SCREEN_W, height: SCREEN_H } = useWindowDimensions();
+  const effectiveWidth = Math.min(SCREEN_W, 430);
+  const topBlockHeight = SCREEN_H * 0.38;
+  const carveCircleSize = effectiveWidth * 1.7;
+  const bottomBlobSize = effectiveWidth * 0.85;
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">

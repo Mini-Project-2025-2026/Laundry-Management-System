@@ -98,27 +98,23 @@ export default function BusinessCard({ business, onPress, distanceLabel, variant
   );
 }
 
-const IMAGE_HEIGHT = 104;
+const IMAGE_HEIGHT = 112;
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.panel,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.line,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
+    ...shadows.card,
   },
   cardPressed: {
     transform: [{ scale: 0.985 }],
-    borderColor: colors.gradientMid,
+    borderColor: colors.brandDark,
   },
   cardWide: {
-    width: 224,
+    width: 236,
     marginRight: 14,
   },
   cardGrid: {
@@ -141,10 +137,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 9,
+    paddingVertical: 3.5,
     borderRadius: radius.pill,
     backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.7)',
+    ...shadows.sm,
   },
   statusDot: {
     width: 6,
@@ -162,52 +161,50 @@ const styles = StyleSheet.create({
     fontSize: 9.5,
   },
   textOpen: {
-    color: colors.good,
+    color: '#047857',
   },
   textClosed: {
-    color: colors.alert,
+    color: '#B91C1C',
   },
   body: {
-    padding: 11,
+    padding: 12,
   },
   headRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   name: {
     flex: 1,
     fontFamily: fonts.bodySemiBold,
-    fontSize: 13,
+    fontSize: 13.5,
     color: colors.ink,
   },
   ratingPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
-    backgroundColor: colors.paper,
+    gap: 3,
+    backgroundColor: colors.stampSoft || '#FEF3C7',
     borderRadius: radius.pill,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderWidth: 1,
-    borderColor: colors.line,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
   },
   ratingText: {
     fontFamily: fonts.bodySemiBold,
-    fontSize: 10,
-    color: colors.ink,
+    fontSize: 10.5,
+    color: colors.stampDark,
   },
   ratingCount: {
     fontFamily: fonts.body,
     fontSize: 9,
-    color: colors.inkSoft,
+    color: colors.stampDark,
   },
   hoursSubtext: {
     fontFamily: fonts.body,
-    fontSize: 10.5,
+    fontSize: 11,
     color: colors.inkSoft,
-    marginTop: 2,
+    marginTop: 3,
   },
   tagsRow: {
     flexDirection: 'row',
@@ -216,16 +213,18 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   tagChip: {
-    backgroundColor: colors.paper,
-    borderRadius: radius.sm,
+    backgroundColor: colors.panelAlt,
+    borderRadius: radius.xs,
     paddingHorizontal: 6,
     paddingVertical: 2,
     maxWidth: '100%',
+    borderWidth: 1,
+    borderColor: '#E0F2FE',
   },
   tagText: {
-    fontFamily: fonts.body,
+    fontFamily: fonts.bodyMedium,
     fontSize: 9.5,
-    color: colors.inkSoft,
+    color: colors.steelDark,
   },
   perksRow: {
     flexDirection: 'row',
@@ -241,7 +240,7 @@ const styles = StyleSheet.create({
   perkText: {
     fontFamily: fonts.bodyMedium,
     fontSize: 9.5,
-    color: colors.good,
+    color: '#059669',
   },
   footerRow: {
     flexDirection: 'row',
@@ -253,14 +252,14 @@ const styles = StyleSheet.create({
     borderTopColor: colors.line,
   },
   pricePrefix: {
-    fontFamily: fonts.body,
+    fontFamily: fonts.bodyMedium,
     fontSize: 8.5,
     color: colors.inkSoft,
     textTransform: 'uppercase',
   },
   priceValue: {
     fontFamily: fonts.mono,
-    fontSize: 12.5,
+    fontSize: 13,
     color: colors.ink,
   },
   distanceRow: {
@@ -269,19 +268,19 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   distanceText: {
-    fontFamily: fonts.body,
+    fontFamily: fonts.bodyMedium,
     fontSize: 10,
     color: colors.inkSoft,
   },
   bookBtn: {
-    backgroundColor: colors.gradientMid,
+    backgroundColor: colors.brandDark,
     borderRadius: radius.pill,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingHorizontal: 13,
+    paddingVertical: 5.5,
   },
   bookBtnText: {
     fontFamily: fonts.bodySemiBold,
-    fontSize: 10.5,
-    color: '#fff',
+    fontSize: 11,
+    color: '#FFFFFF',
   },
 });

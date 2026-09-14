@@ -62,12 +62,12 @@ export default function StatusTrack({ status, stages = DEFAULT_STAGES, cancelled
   );
 }
 
-const CIRCLE = 24;
+const CIRCLE = 26;
 
 const styles = StyleSheet.create({
   track: {
     flexDirection: 'row',
-    marginVertical: 12,
+    marginVertical: 14,
   },
   step: {
     flex: 1,
@@ -89,25 +89,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   circleDone: {
-    backgroundColor: colors.steel,
-    borderColor: colors.steel,
+    backgroundColor: '#059669',
+    borderColor: '#059669',
   },
   circleCurrent: {
-    backgroundColor: colors.brand,
-    borderColor: colors.brand,
+    backgroundColor: colors.brandDark,
+    borderColor: '#38BDF8',
+    borderWidth: 2.5,
+    ...shadows.glow,
   },
   currentDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#fff',
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#FFFFFF',
   },
   circleCancelled: {
     backgroundColor: colors.alert,
     borderColor: colors.alert,
   },
   circleText: {
-    fontFamily: fonts.monoRegular,
+    fontFamily: fonts.mono,
     fontSize: 10,
     color: colors.inkSoft,
   },
@@ -115,24 +117,24 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodySemiBold,
     color: colors.alert,
     fontSize: 10,
-    marginTop: 4,
+    marginTop: 5,
   },
   connector: {
     flex: 1,
-    height: 2,
+    height: 2.5,
     backgroundColor: colors.line,
     marginHorizontal: -1,
   },
   connectorDone: {
-    backgroundColor: colors.steel,
+    backgroundColor: '#059669',
   },
   label: {
     fontFamily: fonts.body,
-    fontSize: 8.5,
+    fontSize: 9,
     textTransform: 'uppercase',
-    letterSpacing: 0.3,
-    color: colors.inkSoft,
-    marginTop: 4,
+    letterSpacing: 0.4,
+    color: colors.inkMuted || colors.inkSoft,
+    marginTop: 5,
     textAlign: 'center',
   },
   labelActive: {

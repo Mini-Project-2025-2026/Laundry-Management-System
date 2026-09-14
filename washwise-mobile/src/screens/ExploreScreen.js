@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, FlatList, ScrollView, StyleSheet, RefreshControl, Pressable } from 'react-native';
-import { ArrowLeft, Search, List as ListIcon, MapPin, Star, Bike, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, Search, List as ListIcon, MapPin, Star, Bike, ChevronRight, X } from 'lucide-react-native';
 import { useApi } from '../api/client';
 import { getCurrentLocation, distanceKm, formatDistance } from '../geo';
 import HomeHeader from '../components/HomeHeader';
@@ -10,12 +10,22 @@ import SectionHeader from '../components/SectionHeader';
 import BusinessCard from '../components/BusinessCard';
 import BusinessDetailScreen from './BusinessDetailScreen';
 import MapView from '../components/MapView';
-import { colors, fonts, radius } from '../theme';
+import { colors, fonts, radius, shadows } from '../theme';
+
+const QUICK_FILTERS = [
+  { key: 'ALL', label: '✨ All' },
+  { key: 'DELIVERY', label: '🚴 Free Pickup' },
+  { key: 'RATED', label: '⭐ Top Rated (4.5+)' },
+  { key: 'WASH', label: '🧺 Wash & Fold', keyword: 'Wash' },
+  { key: 'IRON', label: '💨 Steam Iron', keyword: 'Iron' },
+  { key: 'DRYCLEAN', label: '✨ Dry Clean', keyword: 'Dry Clean' },
+];
 
 export default function ExploreScreen({ onOpenNotifications, onOpenBookings, unreadCount = 0 }) {
   const { api, user } = useApi();
   const [businesses, setBusinesses] = useState([]);
   const [search, setSearch] = useState('');
+  const [activeFilter, setActiveFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -96,7 +106,15 @@ export default function ExploreScreen({ onOpenNotifications, onOpenBookings, unr
     load(search);
   };
 
-  const activeMapShop = selectedMapBusiness || businessesWithDistance[0];
+  const filteredBusinesses = useMemo(() => {
+    return businessesWithDistance.filter((b) => {
+      if (activeFilter === 'DELIVERY') return b.offersDelivery;
+      if (activeFilter === 'RATED') return Number(b.averageRating || 0) >= 4.5;
+      return true;
+    });
+  }, [businessesWithDistance, activeFilter]);
+
+  const activeMapShop = selectedMapBusiness || filteredBusinesses[0] || businessesWithDistance[0];
 
   return (
     <View style={styles.screen}>
@@ -119,13 +137,25 @@ export default function ExploreScreen({ onOpenNotifications, onOpenBookings, unr
           <TextInput
             style={styles.searchInput}
             placeholder="Search laundries or areas…"
-            placeholderTextColor={colors.inkSoft}
+            placeholderTextColor={colors.inkMuted || colors.inkSoft}
             value={search}
             onChangeText={setSearch}
             onFocus={enterBrowse}
             onSubmitEditing={handleSubmitSearch}
             returnKeyType="search"
           />
+          {!!search && (
+            <Pressable
+              onPress={() => {
+                setSearch('');
+                setActiveFilter('ALL');
+                load('');
+              }}
+              hitSlop={8}
+            >
+              <X size={15} color={colors.inkSoft} strokeWidth={2.2} />
+            </Pressable>
+          )}
         </View>
 
         {/* View Switcher: List vs Map */}
@@ -143,6 +173,40 @@ export default function ExploreScreen({ onOpenNotifications, onOpenBookings, unr
             <MapPin size={14} color={viewType === 'map' ? '#FFFFFF' : colors.inkSoft} strokeWidth={2.2} />
           </Pressable>
         </View>
+      </View>
+
+      {/* Category Filter Pills */}
+      <View style={{ marginBottom: 12 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterScroll}
+        >
+          {QUICK_FILTERS.map((f) => {
+            const active = activeFilter === f.key;
+            return (
+              <Pressable
+                key={f.key}
+                style={[styles.filterPill, active && styles.filterPillActive]}
+                onPress={() => {
+                  setActiveFilter(f.key);
+                  if (f.keyword) {
+                    setSearch(f.keyword);
+                    setMode('browse');
+                    load(f.keyword);
+                  } else if (f.key === 'ALL') {
+                    setSearch('');
+                    load('');
+                  }
+                }}
+              >
+                <Text style={[styles.filterPillText, active && styles.filterPillTextActive]}>
+                  {f.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -242,11 +306,11 @@ export default function ExploreScreen({ onOpenNotifications, onOpenBookings, unr
       ) : (
         <>
           <Text style={styles.resultsCount}>
-            {businessesWithDistance.length} laundry shop{businessesWithDistance.length === 1 ? '' : 's'}
-            {search ? ` for "${search}"` : ' nearby'}
+            {filteredBusinesses.length} laundry shop{filteredBusinesses.length === 1 ? '' : 's'}
+            {search ? ` for "${search}"` : ' found'}
           </Text>
           <FlatList
-            data={businessesWithDistance}
+            data={filteredBusinesses}
             keyExtractor={(b) => String(b.id)}
             numColumns={2}
             contentContainerStyle={{ paddingBottom: 24 }}
@@ -254,7 +318,7 @@ export default function ExploreScreen({ onOpenNotifications, onOpenBookings, unr
             ListEmptyComponent={
               !loading && (
                 <View style={styles.empty}>
-                  <Text style={styles.emptyText}>No laundries found. Try a different search.</Text>
+                  <Text style={styles.emptyText}>No laundries matched your filter. Try tapping '✨ All'.</Text>
                 </View>
               )
             }
@@ -303,6 +367,32 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 13.5,
     color: colors.ink,
+  },
+  filterScroll: {
+    paddingVertical: 2,
+    gap: 8,
+  },
+  filterPill: {
+    backgroundColor: colors.panel,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: radius.pill,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    ...shadows.sm,
+  },
+  filterPillActive: {
+    backgroundColor: colors.brandDark,
+    borderColor: colors.brandDark,
+  },
+  filterPillText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 11.5,
+    color: colors.inkSoft,
+  },
+  filterPillTextActive: {
+    color: '#FFFFFF',
+    fontFamily: fonts.bodySemiBold,
   },
   viewToggleGroup: {
     flexDirection: 'row',

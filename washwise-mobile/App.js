@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as NativeSplashScreen from 'expo-splash-screen';
@@ -20,7 +20,7 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SignupScreen from './src/screens/SignupScreen';
 import MainApp from './src/MainApp';
-import { colors } from './src/theme';
+import { colors, fonts, radius, shadows } from './src/theme';
 
 // Native OS-level splash (hides once fonts are ready) is separate from our
 // own animated in-app SplashScreen component (shows next, for a few seconds,
@@ -71,6 +71,9 @@ function AuthGate() {
 }
 
 export default function App() {
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const isDesktopWeb = Platform.OS === 'web' && windowWidth > 540;
+
   const [fontsLoaded] = useFonts({
     SpaceGrotesk_600SemiBold,
     Inter_400Regular,
@@ -90,7 +93,7 @@ export default function App() {
     return null;
   }
 
-  return (
+  const appContent = (
     <SafeAreaProvider>
       <ApiProvider>
         <View style={styles.root} onLayout={onLayoutRootView}>
@@ -101,6 +104,36 @@ export default function App() {
       </ApiProvider>
     </SafeAreaProvider>
   );
+
+  if (!isDesktopWeb) {
+    return appContent;
+  }
+
+  // Elegant responsive smartphone chassis on desktop displays
+  return (
+    <View style={styles.desktopOuter}>
+      <View style={styles.desktopHeader}>
+        <View style={styles.desktopLogoPill}>
+          <Text style={styles.desktopLogoText}>🧺 WashWise</Text>
+          <View style={styles.desktopLiveDot} />
+          <Text style={styles.desktopLiveText}>Interactive Presentation Mode</Text>
+        </View>
+      </View>
+
+      <View
+        style={[
+          styles.desktopPhoneChassis,
+          { height: Math.min(windowHeight * 0.94, 900) },
+        ]}
+      >
+        <View style={styles.phoneDynamicNotch}>
+          <View style={styles.notchCamera} />
+          <View style={styles.notchSpeaker} />
+        </View>
+        <View style={styles.phoneScreenWrapper}>{appContent}</View>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -110,5 +143,87 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+  },
+  desktopOuter: {
+    flex: 1,
+    backgroundColor: '#090E17',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  desktopHeader: {
+    marginBottom: 12,
+  },
+  desktopLogoPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(30, 41, 59, 0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: radius.pill,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    gap: 8,
+  },
+  desktopLogoText: {
+    fontFamily: fonts.display,
+    fontSize: 13,
+    color: '#F8FAFC',
+  },
+  desktopLiveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#10B981',
+  },
+  desktopLiveText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 11,
+    color: '#94A3B8',
+  },
+  desktopPhoneChassis: {
+    width: '100%',
+    maxWidth: 430,
+    backgroundColor: '#0F172A',
+    borderRadius: 44,
+    borderWidth: 6,
+    borderColor: '#1E293B',
+    overflow: 'hidden',
+    shadowColor: '#0284C7',
+    shadowOpacity: 0.22,
+    shadowRadius: 32,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 16,
+  },
+  phoneDynamicNotch: {
+    position: 'absolute',
+    top: 6,
+    alignSelf: 'center',
+    width: 110,
+    height: 22,
+    backgroundColor: '#0F172A',
+    borderRadius: 12,
+    zIndex: 999,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  notchCamera: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#1E293B',
+  },
+  notchSpeaker: {
+    width: 42,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#1E293B',
+  },
+  phoneScreenWrapper: {
+    flex: 1,
+    backgroundColor: colors.paper,
   },
 });
