@@ -39,7 +39,7 @@ if not exist "%ROOT_DIR%washwise-backend\target\washwise-backend-1.0.0.jar" (
 
 :: 4. Start Backend Server (if not already running on port 8080)
 echo [1/3] Checking Spring Boot Backend on port 8080...
-powershell -Command "$client = New-Object System.Net.Sockets.TcpClient; try { $client.Connect('127.0.0.1', 8080); exit 0 } catch { exit 1 }" >nul 2>nul
+powershell -Command "try { $r = [System.Net.WebRequest]::Create('http://127.0.0.1:8080/api/laundry-businesses'); $r.Timeout = 3000; $resp = $r.GetResponse(); exit 0 } catch { exit 1 }" >nul 2>nul
 if %errorlevel% equ 0 (
     echo       Backend is already running on port 8080.
 ) else (
@@ -49,7 +49,7 @@ if %errorlevel% equ 0 (
     echo       Waiting for backend to boot up...
     :wait_backend
     timeout /t 2 /nobreak >nul
-    powershell -Command "$client = New-Object System.Net.Sockets.TcpClient; try { $client.Connect('127.0.0.1', 8080); exit 0 } catch { exit 1 }" >nul 2>nul
+    powershell -Command "try { $r = [System.Net.WebRequest]::Create('http://127.0.0.1:8080/api/laundry-businesses'); $r.Timeout = 3000; $resp = $r.GetResponse(); exit 0 } catch { exit 1 }" >nul 2>nul
     if %errorlevel% neq 0 goto wait_backend
     echo       Backend started successfully!
 )

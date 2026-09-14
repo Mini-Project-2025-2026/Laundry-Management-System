@@ -126,7 +126,7 @@ export default function App() {
           { height: Math.min(windowHeight * 0.94, 900) },
         ]}
       >
-        <View style={styles.phoneDynamicNotch}>
+        <View style={styles.phoneDynamicNotch} pointerEvents="none">
           <View style={styles.notchCamera} />
           <View style={styles.notchSpeaker} />
         </View>

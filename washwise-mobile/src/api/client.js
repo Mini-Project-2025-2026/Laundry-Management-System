@@ -31,7 +31,24 @@ async function request(baseUrl, path, options = {}, token) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${baseUrl}${path}`, { ...options, headers });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+  let res;
+  try {
+    res = await fetch(`${baseUrl}${path}`, {
+      ...options,
+      headers,
+      signal: options.signal || controller.signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('Connection timed out. Please verify the backend server is running.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!res.ok) {
     let message = `Request failed (${res.status})`;
